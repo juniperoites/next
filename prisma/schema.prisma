@@ -1,0 +1,144 @@
+// This is your Prisma schema file
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String
+  icon        String
+  sortOrder   Int       @default(0)
+  services    Service[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Service {
+  id                 String       @id @default(cuid())
+  name               String
+  slug               String       @unique
+  categoryId         String
+  category           Category     @relation(fields: [categoryId], references: [id])
+  shortDesc          String
+  fullContent        String
+  basePriceAED       Float
+  priceUnit          String       @default("per unit / visit")
+  emergencyAvailable Boolean      @default(true)
+  isPopular          Boolean      @default(false)
+  isActive           Boolean      @default(true)
+  features           String       // JSON encoded string array
+  faqs               String       // JSON encoded Q&A array
+  metaTitle          String
+  metaDesc           String
+  leads              Lead[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+}
+
+model Location {
+  id                String   @id @default(cuid())
+  city              String   // e.g. "Dubai", "Abu Dhabi", "Sharjah"
+  citySlug          String   // "dubai", "abu-dhabi", "sharjah"
+  neighborhood      String   // "Dubai Marina", "Palm Jumeirah", "Downtown Dubai", "Yas Island"
+  neighborhoodSlug  String   // "dubai-marina", "palm-jumeirah", "downtown-dubai"
+  emirate           String   // "Dubai", "Abu Dhabi", "Sharjah"
+  isHighDemand      Boolean  @default(false)
+  avgResponseMins   Int      @default(30)
+  techniciansOnDuty Int      @default(5)
+  postalCode        String   @default("00000")
+  latitude          Float
+  longitude         Float
+  metaTitle         String
+  metaDesc          String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([citySlug, neighborhoodSlug])
+}
+
+model AMCPackage {
+  id                 String   @id @default(cuid())
+  name               String   // "Silver Essentials", "Gold Villa Care", "Platinum Royal Prestige"
+  slug               String   @unique
+  tier               String   // "SILVER", "GOLD", "PLATINUM"
+  priceAnnualAED     Float
+  priceMonthlyAED    Float
+  visitsPerYear      Int
+  emergencyCallouts  Int      // -1 for unlimited
+  acServiceCount     Int
+  plumbingCheckups   Int
+  electricalAudits   Int
+  freeSparePartsAED  Float    @default(0)
+  targetPropertyType String   // "Apartment", "Townhouse / Villa", "Luxury Mansion / Commercial"
+  features           String   // JSON encoded list of features
+  isFeatured         Boolean  @default(false)
+  leads              Lead[]
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model PortfolioItem {
+  id              String   @id @default(cuid())
+  title           String
+  slug            String   @unique
+  categorySlug    String
+  locationName    String   // "Palm Jumeirah Villa", "Burj Crown Downtown", etc.
+  beforeImage     String
+  afterImage      String
+  completionTime  String   // "4 Hours", "2 Days"
+  clientType      String   // "Residential Villa", "Commercial Penthouse"
+  description     String
+  resultsAchieved String   // JSON array of bullet points
+  createdAt       DateTime @default(now())
+}
+
+model Testimonial {
+  id               String   @id @default(cuid())
+  authorName       String
+  authorRole       String   // "Villa Owner", "Property Manager", "Penthouse Resident"
+  neighborhood     String   // "Emirates Hills, Dubai", "Saadiyat Island, Abu Dhabi"
+  city             String   // "Dubai", "Abu Dhabi"
+  rating           Int      @default(5)
+  reviewText       String
+  verifiedPurchase Boolean  @default(true)
+  serviceName      String   // "HVAC Overhaul", "Full Villa AMC", "Emergency Plumbing"
+  date             String
+  createdAt        DateTime @default(now())
+}
+
+model Lead {
+  id            String       @id @default(cuid())
+  fullName      String
+  email         String
+  phone         String
+  city          String
+  neighborhood  String
+  propertyType  String       // "Apartment", "Villa / Townhouse", "Commercial"
+  serviceId     String?
+  service       Service?     @relation(fields: [serviceId], references: [id])
+  amcPackageId  String?
+  amcPackage    AMCPackage?  @relation(fields: [amcPackageId], references: [id])
+  estimatedAED  Float?
+  urgency       String       @default("NORMAL") // "EMERGENCY_NOW", "WITHIN_24_HRS", "SCHEDULED"
+  message       String?
+  status        String       @default("NEW") // "NEW", "CONTACTED", "DISPATCHED", "COMPLETED", "CANCELLED"
+  gtmEventId    String?
+  utmSource     String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      String   @default("DISPATCHER") // "ADMIN", "DISPATCHER", "ENGINEER"
+  createdAt DateTime @default(now())
+}
