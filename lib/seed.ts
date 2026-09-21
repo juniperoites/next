@@ -62,7 +62,7 @@ export async function ensureDatabaseSeeded() {
           metaTitle: srv.metaTitle,
           metaDesc: srv.metaDesc,
           image: srv.image || null,
-        },
+        } as any,
       });
     }
 
