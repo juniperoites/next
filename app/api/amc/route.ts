@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getAMCPackages, createLead } from "@/lib/store";
 
 export async function GET() {
@@ -36,6 +37,13 @@ export async function POST(req: NextRequest) {
       estimatedAED: estimated,
       message: `AMC Application for [${selectedPkg?.name || tier}] - Billing: ${billingCycle || "Annual"}`,
     });
+
+    // Invalidate admin CRM cache
+    try {
+      revalidatePath("/admin");
+    } catch (cacheErr) {
+      console.warn("revalidatePath warning:", cacheErr);
+    }
 
     return NextResponse.json({
       success: true,

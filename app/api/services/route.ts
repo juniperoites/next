@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServices, updateServicePrice } from "@/lib/store";
 
 export async function GET() {
@@ -18,6 +19,20 @@ export async function PATCH(req: NextRequest) {
     }
 
     await updateServicePrice(serviceId, basePriceAED, isActive);
+
+    // Instant ISR Cache Invalidation
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/");
+      revalidatePath("/services");
+      revalidatePath(`/services/${serviceId}`);
+      revalidatePath("/quote");
+      revalidatePath("/areas");
+      revalidatePath("/admin");
+    } catch (cacheErr) {
+      console.warn("revalidatePath warning:", cacheErr);
+    }
+
     return NextResponse.json({
       success: true,
       message: `Service pricing updated to AED ${basePriceAED}`,

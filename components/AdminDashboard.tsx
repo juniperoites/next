@@ -43,8 +43,10 @@ import {
   Check,
   X,
   AlertCircle,
+  LogOut,
 } from "lucide-react";
 import { generateLocalBusinessSchema, generateServiceSchema, SITE_CONFIG } from "@/lib/seo";
+import { AdminLogin } from "./AdminLogin";
 
 interface AdminDashboardProps {
   initialLeads: LeadRecord[];
@@ -77,6 +79,39 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [testimonials, setTestimonials] = useState<TestimonialData[]>(initialTestimonials);
   const [blogPosts, setBlogPosts] = useState<BlogPostData[]>(initialBlogs);
   const [businessSettings, setBusinessSettings] = useState<BusinessSettingsData>(initialSettings);
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentUser, setCurrentUser] = useState<{ name: string; email: string; role: string } | null>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("alsafwa_admin_user");
+      if (stored) {
+        try {
+          const user = JSON.parse(stored);
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+        } catch {
+          localStorage.removeItem("alsafwa_admin_user");
+        }
+      }
+      setIsAuthChecking(false);
+    }
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/admin/auth/logout", { method: "POST" });
+    } catch {}
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("alsafwa_admin_user");
+    }
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    showNotification("Logged out successfully from Admin Console");
+  };
 
   // Filters & Notifications
   const [searchQuery, setSearchQuery] = useState("");
@@ -291,6 +326,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     ? generateServiceSchema(inspectedService, inspectedLocation)
     : null;
 
+  if (isAuthChecking) {
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center text-slate-700">
+        <div className="flex items-center gap-2.5 text-xs font-bold bg-white px-5 py-3 rounded-2xl border border-surfaceBorder shadow-sm">
+          <span className="w-4 h-4 border-2 border-brand-600 border-t-transparent rounded-full animate-spin" />
+          <span>Verifying Admin Authorization...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <AdminLogin
+        onLoginSuccess={(user) => {
+          setCurrentUser(user);
+          setIsAuthenticated(true);
+          showNotification(`Authenticated as ${user.name}`);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-surface text-slate-900 pb-24">
       {/* Top Admin Header */}
@@ -316,13 +374,30 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           </div>
 
           <div className="flex items-center gap-3">
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface border border-surfaceBorder text-xs">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="font-semibold text-slate-700">
+                {currentUser?.name || "Master Dispatcher"}
+              </span>
+              <span className="text-slate-400 text-[10px]">({currentUser?.email || "admin@alsafwa.ae"})</span>
+            </div>
+
             <button
               onClick={refreshData}
               disabled={isRefreshing}
               className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
-              <span>Sync & Refresh Data</span>
+              <span className="hidden sm:inline">Sync & Refresh Data</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="px-3.5 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold flex items-center gap-1.5 transition"
+              title="Sign Out of Admin Console"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Logout</span>
             </button>
           </div>
         </div>

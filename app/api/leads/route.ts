@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getLeads, createLead, updateLeadStatus } from "@/lib/store";
 import { z } from "zod";
 
@@ -33,6 +34,13 @@ export async function POST(req: NextRequest) {
 
     const newLead = await createLead(validated);
 
+    // Invalidate admin CRM cache
+    try {
+      revalidatePath("/admin");
+    } catch (cacheErr) {
+      console.warn("revalidatePath warning:", cacheErr);
+    }
+
     return NextResponse.json({
       success: true,
       message: "Lead successfully registered and CRM notification dispatched.",
@@ -56,6 +64,14 @@ export async function PATCH(req: NextRequest) {
     }
 
     await updateLeadStatus(id, status);
+
+    // Invalidate admin CRM cache
+    try {
+      revalidatePath("/admin");
+    } catch (cacheErr) {
+      console.warn("revalidatePath warning:", cacheErr);
+    }
+
     return NextResponse.json({ success: true, message: "Lead status updated" });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import "./globals.css"; // Primary styling
 import { AppShell } from "@/components/AppShell";
 import { SITE_CONFIG, generateLocalBusinessSchema } from "@/lib/seo";
 

@@ -37,6 +37,7 @@ model Service {
   faqs               String       // JSON encoded Q&A array
   metaTitle          String
   metaDesc           String
+  image              String?
   leads              Lead[]
   createdAt          DateTime     @default(now())
   updatedAt          DateTime     @updatedAt
@@ -113,6 +114,43 @@ model Testimonial {
   createdAt        DateTime @default(now())
 }
 
+model BlogPost {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  excerpt       String
+  content       String
+  coverImage    String
+  author        String
+  category      String
+  readTime      String
+  publishedDate String
+  metaTitle     String
+  metaDesc      String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model BusinessSettings {
+  id                  String   @id @default("default")
+  companyName         String
+  phone               String
+  emergencyHotline    String
+  whatsappNumber      String
+  email               String
+  address             String
+  city                String
+  country             String
+  openingHours        String
+  dedLicense          String
+  dewaLicense         String
+  municipalityLicense String
+  isoCertified        String
+  bannerNotice        String
+  bannerEnabled       Boolean  @default(true)
+  updatedAt           DateTime @updatedAt
+}
+
 model Lead {
   id            String       @id @default(cuid())
   fullName      String
@@ -123,6 +161,8 @@ model Lead {
   propertyType  String       // "Apartment", "Villa / Townhouse", "Commercial"
   serviceId     String?
   service       Service?     @relation(fields: [serviceId], references: [id])
+  serviceSlug   String?
+  amcTier       String?
   amcPackageId  String?
   amcPackage    AMCPackage?  @relation(fields: [amcPackageId], references: [id])
   estimatedAED  Float?

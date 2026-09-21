@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getServices, saveService, deleteService } from "@/lib/store";
 
 export async function GET() {
@@ -13,6 +14,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Name and slug are required" }, { status: 400 });
     }
     const saved = await saveService(body);
+
+    // Instant ISR Cache Invalidation
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/");
+      revalidatePath("/services");
+      revalidatePath(`/services/${saved.slug}`);
+      revalidatePath("/quote");
+      revalidatePath("/areas");
+      revalidatePath("/admin");
+    } catch (cacheErr) {
+      console.warn("revalidatePath warning:", cacheErr);
+    }
+
     return NextResponse.json({ success: true, message: "Service saved successfully", service: saved });
   } catch (e: any) {
     return NextResponse.json({ success: false, error: e.message }, { status: 400 });
@@ -27,6 +42,19 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ success: false, error: "Missing service id" }, { status: 400 });
     }
     await deleteService(id);
+
+    // Instant ISR Cache Invalidation
+    try {
+      revalidatePath("/", "layout");
+      revalidatePath("/");
+      revalidatePath("/services");
+      revalidatePath("/quote");
+      revalidatePath("/areas");
+      revalidatePath("/admin");
+    } catch (cacheErr) {
+      console.warn("revalidatePath warning:", cacheErr);
+    }
+
     return NextResponse.json({ success: true, message: "Service deleted successfully" });
   } catch (e: any) {
     return NextResponse.json({ success: false, error: e.message }, { status: 400 });
