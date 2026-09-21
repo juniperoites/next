@@ -14,6 +14,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1.0,
     },
     {
+      url: `${baseUrl}/home-2`,
+      lastModified: new Date(),
+      changeFrequency: "daily",
+      priority: 0.95,
+    },
+    {
       url: `${baseUrl}/#amc-packages`,
       lastModified: new Date(),
       changeFrequency: "weekly",

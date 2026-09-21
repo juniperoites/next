@@ -209,6 +209,16 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuoteModal }) => {
             Home
           </Link>
 
+          <Link
+            href="/home-2"
+            className="text-xs xl:text-sm font-bold text-slate-700 hover:text-brand-600 transition flex items-center gap-1.5 whitespace-nowrap"
+          >
+            <span>Home 2</span>
+            <span className="text-[9px] font-extrabold text-blue-800 bg-blue-100 px-1.5 py-0.5 rounded border border-blue-200">
+              New Design
+            </span>
+          </Link>
+
           {/* Mega Menu Trigger */}
           <div
             className="relative py-2"
@@ -443,7 +453,15 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuoteModal }) => {
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3.5 py-2.5 rounded-xl font-bold hover:bg-surface"
             >
-              Home
+              Home (Classic)
+            </Link>
+            <Link
+              href="/home-2"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block px-3.5 py-2.5 rounded-xl font-bold hover:bg-surface flex items-center justify-between text-blue-700 bg-blue-50/50"
+            >
+              <span>Home 2 (Modern Clean)</span>
+              <span className="text-xs text-blue-700 font-bold bg-blue-100 px-2 py-0.5 rounded-full">New Design</span>
             </Link>
             <Link
               href="/#all-services"
