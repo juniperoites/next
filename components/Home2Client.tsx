@@ -35,16 +35,22 @@ import {
   ChevronRight,
   Shield,
   Award,
-  AlertCircle,
   Radio,
   Sliders,
   Check,
+  Tv,
+  ThermometerSnowflake,
   Flame,
-  Activity,
-  ThumbsUp,
-  UserCheck,
-  Calendar,
-  Compass,
+  Bath,
+  Utensils,
+  Sofa,
+  Sun,
+  Eye,
+  CheckCircle,
+  HelpCircle,
+  TrendingUp,
+  Headphones,
+  BadgeCheck,
 } from "lucide-react";
 import { BUSINESS_SETTINGS } from "@/lib/data";
 import { Analytics } from "@/lib/analytics";
@@ -68,87 +74,231 @@ export const Home2Client: React.FC<Home2Props> = ({
 }) => {
   const { openQuoteModal } = useModal();
 
-  // 1. Hero Quick Diagnostic Tabs
-  const [heroDiagnosticIndex, setHeroDiagnosticIndex] = useState(0);
+  // 1. Hero Magic Diagnostic Problem Switcher
+  const [heroIssueIdx, setHeroIssueIdx] = useState(0);
 
   const heroIssues = [
     {
-      id: "ac-cooling",
-      tabLabel: "❄️ AC Blowing Warm Air",
-      title: "AC Deep Diagnostics & Chemical Coil Restoration",
-      symptom: "AC blowing warm air, low airflow, or ice on indoor evaporator coils.",
-      solution: "Full gas pressure check, capacitor testing, and 12-bar chemical pressure coil wash.",
+      id: "ac",
+      icon: <Fan className="w-5 h-5 text-blue-600" />,
+      tabName: "❄️ AC Blowing Warm Air",
+      title: "AC Deep Cooling Restoration & Coil Decontamination",
+      symptom: "AC blowing ambient room air, whistling sound, or ice formation on evaporator coils.",
+      solution: "Gas pressure diagnostics, capacitor & fan motor replacement, and 12-bar chemical pressure coil wash.",
       eta: "18 - 25 Mins",
       price: "150 AED",
-      serviceSlug: "ac-repair-troubleshooting",
+      slug: "ac-repair-troubleshooting",
       image: "/images/technician_ac.jpg",
       badge: "High Priority Dispatch",
+      accent: "from-blue-500/10 to-blue-500/5 text-blue-700 border-blue-200",
     },
     {
-      id: "plumbing-leak",
-      tabLabel: "💧 Water Leak / Heater Issue",
-      title: "Rapid Thermal Leak Isolation & Heater Overhaul",
-      symptom: "Ceiling dripping, low water pressure, or water heater not heating / tripping breaker.",
-      solution: "Acoustic sensor leak isolation, Italian Ariston element replacement & pressure testing.",
+      id: "plumbing",
+      icon: <Droplets className="w-5 h-5 text-cyan-600" />,
+      tabName: "💧 Water Leak / Heater Failure",
+      title: "Thermal Leak Detection & Water Heater Overhaul",
+      symptom: "Water dripping from false ceiling, no hot water, or heater breaker tripping continuously.",
+      solution: "Non-invasive thermal imaging leak location & Italian Ariston heater swap with certified safety valve.",
       eta: "15 - 20 Mins",
       price: "150 AED",
-      serviceSlug: "emergency-plumbing-repair",
+      slug: "emergency-plumbing-repair",
       image: "/images/water_heater_after.jpg",
-      badge: "Emergency Response",
+      badge: "Emergency Water Isolation",
+      accent: "from-cyan-500/10 to-cyan-500/5 text-cyan-700 border-cyan-200",
     },
     {
-      id: "power-trip",
-      tabLabel: "⚡ DB Switch / Power Tripping",
-      title: "DEWA Certified Electrical DB Troubleshooting",
-      symptom: "Main breaker tripping continuously, sparking socket, or partial blackout in villa.",
-      solution: "Megger insulation resistance test, load rebalancing, and Schneider breaker replacement.",
+      id: "electrical",
+      icon: <Zap className="w-5 h-5 text-amber-600" />,
+      tabName: "⚡ DB Tripping / Sparking",
+      title: "DEWA Certified Electrical DB Diagnostics",
+      symptom: "Main circuit breaker trips on heavy load, burning smell from switchboard, or partial villa blackout.",
+      solution: "Megger insulation resistance test, phase load balancing, and ABB/Schneider breaker replacement.",
       eta: "20 - 30 Mins",
       price: "150 AED",
-      serviceSlug: "electrical-db-short-circuit",
+      slug: "electrical-db-short-circuit",
       image: "/images/db_box_after.jpg",
       badge: "DEWA Certified",
+      accent: "from-amber-500/10 to-amber-500/5 text-amber-700 border-amber-200",
     },
     {
-      id: "villa-paint",
-      tabLabel: "🎨 Villa & Apartment Painting",
+      id: "painting",
+      icon: <Paintbrush className="w-5 h-5 text-emerald-600" />,
+      tabName: "🎨 Villa & Apartment Painting",
       title: "Luxury Jotun Velvet Silk Villa Painting",
-      symptom: "Scuffed walls, peeling paint, move-out handover repainting, or new modern accent color.",
+      symptom: "Scuffed walls, peeling paint, move-out handover repainting, or new modern designer accent color.",
       solution: "Laser line tape masking, 3-stage wall sanding, primer coat + 2x Jotun Silk finish.",
       eta: "Same-Day Start",
       price: "689 AED",
-      serviceSlug: "villa-painting-decor",
+      slug: "villa-painting-decor",
       image: "/images/villa_paint_after.jpg",
       badge: "Jotun Silk Certified",
+      accent: "from-emerald-500/10 to-emerald-500/5 text-emerald-700 border-emerald-200",
     },
     {
-      id: "handyman-mounting",
-      tabLabel: "🔨 Handyman & TV Mounting",
+      id: "handyman",
+      icon: <Hammer className="w-5 h-5 text-purple-600" />,
+      tabName: "🔨 Handyman & TV Mounting",
       title: "Precision TV Wall Mounting & Custom Assembly",
       symptom: "75\"-85\" TV bracket mounting, IKEA/Italian furniture assembly, chandelier hanging.",
       solution: "Stud sensor cable detection, heavy-duty Fischer toggle anchors & laser leveling.",
       eta: "30 - 45 Mins",
       price: "110 AED",
-      serviceSlug: "furniture-assembly-tv-mounting",
+      slug: "furniture-assembly-tv-mounting",
       image: "/images/hero_technician.jpg",
       badge: "Laser Leveled",
+      accent: "from-purple-500/10 to-purple-500/5 text-purple-700 border-purple-200",
     },
   ];
 
-  const currentHeroIssue = heroIssues[heroDiagnosticIndex];
+  const currentHeroIssue = heroIssues[heroIssueIdx];
 
-  // 2. Interactive Calculator / Booking Terminal State
-  const [calcCategory, setCalcCategory] = useState<string>("ac");
+  // 2. Interactive Room-by-Room Diagnostic Studio State
+  const [selectedRoom, setSelectedRoom] = useState<"living" | "kitchen" | "bathroom" | "villa">("living");
+
+  const roomDiagnostics = {
+    living: {
+      name: "Living Room & Bedrooms",
+      icon: <Sofa className="w-5 h-5 text-brand-600" />,
+      bg: "bg-blue-50/60 border-blue-200",
+      description: "HVAC comfort, acoustic TV setups, lighting ambiance, and flawless wall aesthetics.",
+      issues: [
+        {
+          name: "AC Duct Whistling / Odor",
+          fix: "Antimicrobial duct sanitization & blower wheel dynamic balance",
+          price: "150 AED",
+          slug: "ac-repair-troubleshooting",
+        },
+        {
+          name: "Large TV Wall Mounting (65\"-85\")",
+          fix: "Fischer heavy load anchors + concealed in-wall cable route",
+          price: "110 AED",
+          slug: "furniture-assembly-tv-mounting",
+        },
+        {
+          name: "Chandelier & Dimmer Switch Setup",
+          fix: "Load-rated ceiling anchor + smart automation switch pairing",
+          price: "130 AED",
+          slug: "electrical-db-short-circuit",
+        },
+        {
+          name: "Jotun Accent Wall Repaint",
+          fix: "Zero-VOC Jotun Velvet Silk coat with laser edge line masking",
+          price: "299 AED",
+          slug: "villa-painting-decor",
+        },
+      ],
+    },
+    kitchen: {
+      name: "Kitchen & Laundry Zone",
+      icon: <Utensils className="w-5 h-5 text-amber-600" />,
+      bg: "bg-amber-50/60 border-amber-200",
+      description: "High-power appliances, grease traps, under-sink valves, and water purification.",
+      issues: [
+        {
+          name: "Under-Sink Pipe Leak / Smell",
+          fix: "High-durability P-trap rebuild & silicone sealing check",
+          price: "150 AED",
+          slug: "emergency-plumbing-repair",
+        },
+        {
+          name: "Kitchen Ring Main Breaker Trip",
+          fix: "Oven/Microwave circuit load rebalancing & breaker upgrade",
+          price: "150 AED",
+          slug: "electrical-db-short-circuit",
+        },
+        {
+          name: "Dishwasher / Washing Machine Hookup",
+          fix: "Pressure regulator valve installation & anti-flood test",
+          price: "120 AED",
+          slug: "emergency-plumbing-repair",
+        },
+        {
+          name: "Exhaust Fan / Hood Motor Repair",
+          fix: "Centrifugal fan impeller clean & capacitor swap",
+          price: "140 AED",
+          slug: "ac-repair-troubleshooting",
+        },
+      ],
+    },
+    bathroom: {
+      name: "Bathrooms & Water Heating",
+      icon: <Bath className="w-5 h-5 text-cyan-600" />,
+      bg: "bg-cyan-50/60 border-cyan-200",
+      description: "Continuous hot water, zero ceiling drips, high-pressure mixers, and sanitary care.",
+      issues: [
+        {
+          name: "Water Heater Not Heating / Leaking",
+          fix: "Italian Ariston 50L/80L heater replacement + safety valve",
+          price: "150 AED",
+          slug: "emergency-plumbing-repair",
+        },
+        {
+          name: "Shower Mixer / Low Water Pressure",
+          fix: "Cartridge overhaul & pressure booster pump optimization",
+          price: "150 AED",
+          slug: "emergency-plumbing-repair",
+        },
+        {
+          name: "Ceiling False Access Leak Investigation",
+          fix: "Acoustic sensor inspection & CPVC joint heat fusion fix",
+          price: "180 AED",
+          slug: "emergency-plumbing-repair",
+        },
+        {
+          name: "Silicone Grout & Anti-Mould Sealing",
+          fix: "Hospital-grade anti-fungal silicone bead application",
+          price: "110 AED",
+          slug: "furniture-assembly-tv-mounting",
+        },
+      ],
+    },
+    villa: {
+      name: "Villa Exterior & Roof Infrastructure",
+      icon: <Sun className="w-5 h-5 text-emerald-600" />,
+      bg: "bg-emerald-50/60 border-emerald-200",
+      description: "Sun protection, booster pumps, weatherproof electricals, and perimeter care.",
+      issues: [
+        {
+          name: "Water Tank Booster Pump Failure",
+          fix: "Grundfos/ESPA pressure switch calibration & capacitor fix",
+          price: "190 AED",
+          slug: "emergency-plumbing-repair",
+        },
+        {
+          name: "Outdoor Weatherproof Light Wiring",
+          fix: "IP66 waterproof junction box & surge protection install",
+          price: "150 AED",
+          slug: "electrical-db-short-circuit",
+        },
+        {
+          name: "Villa Boundary Wall Crack & Repaint",
+          fix: "Elastomeric weatherproof crack filler + UV-resistant paint",
+          price: "790 AED",
+          slug: "villa-painting-decor",
+        },
+        {
+          name: "Roof Drain Gutter Blockage Clearance",
+          fix: "High-pressure jetting & leaf guard mesh installation",
+          price: "220 AED",
+          slug: "emergency-plumbing-repair",
+        },
+      ],
+    },
+  };
+
+  // 3. Interactive Pricing Terminal (Light Theme)
+  const [calcService, setCalcService] = useState<string>("ac");
   const [calcProperty, setCalcProperty] = useState<string>("2bed");
-  const [calcUrgency, setCalcUrgency] = useState<"emergency" | "scheduled">("emergency");
   const [calcLocation, setCalcLocation] = useState<string>("Dubai Marina");
+  const [calcUrgency, setCalcUrgency] = useState<"emergency" | "scheduled">("emergency");
 
-  const calculateCost = () => {
+  const calculateEstimate = () => {
     let base = 150;
-    if (calcCategory === "ac") base = 150;
-    if (calcCategory === "plumbing") base = 160;
-    if (calcCategory === "electrical") base = 150;
-    if (calcCategory === "painting") base = 650;
-    if (calcCategory === "handyman") base = 110;
+    if (calcService === "ac") base = 150;
+    if (calcService === "plumbing") base = 160;
+    if (calcService === "electrical") base = 150;
+    if (calcService === "painting") base = 650;
+    if (calcService === "handyman") base = 110;
 
     let propMultiplier = 1;
     if (calcProperty === "studio") propMultiplier = 0.9;
@@ -157,136 +307,49 @@ export const Home2Client: React.FC<Home2Props> = ({
     if (calcProperty === "villa") propMultiplier = 1.8;
     if (calcProperty === "luxury") propMultiplier = 2.4;
 
-    const urgencyAdd = calcUrgency === "emergency" ? 0 : 0; // Flat transparent pricing
-    return Math.round(base * propMultiplier + urgencyAdd);
+    return Math.round(base * propMultiplier);
   };
 
-  // 3. Service Deep-Dive Tabs
-  const [activeServiceTab, setActiveServiceTab] = useState<number>(0);
-
-  const luxuryServices = [
-    {
-      title: "Air Conditioning Engineering",
-      subtitle: "Chiller, Split & Ducted Central AC Care",
-      desc: "Dubai's climate requires pristine condenser performance. We provide high-pressure coil decontamination, ecological R410A refrigerant top-up, fan motor replacement, and airflow balancing.",
-      price: "From 150 AED",
-      slug: "ac-repair-troubleshooting",
-      image: "/images/technician_ac.jpg",
-      icon: <Fan className="w-6 h-6 text-blue-400" />,
-      features: [
-        "Hydro-pressure coil sanitization with antimicrobial wash",
-        "Digital laser temperature differential testing (Delta T)",
-        "Capacitor, thermostat, and PCB circuit board diagnostics",
-        "Full 90-Day parts and labor cooling guarantee",
-      ],
-      tag: "Top Rated AC Specialists",
-    },
-    {
-      title: "Emergency Plumbing Infrastructure",
-      subtitle: "Thermal Leak Detection & Water Heating",
-      desc: "Instant mitigation for ceiling leaks, booster pump failures, and faulty water heaters. Our plumbers carry specialized acoustic listening gear and replacement Italian heating elements on every van.",
-      price: "From 150 AED",
-      slug: "emergency-plumbing-repair",
-      image: "/images/water_heater_after.jpg",
-      icon: <Droplets className="w-6 h-6 text-cyan-400" />,
-      features: [
-        "Non-invasive acoustic & thermal infrared leak detection",
-        "Ariston & Atlantic water heater replacement with safety valve",
-        "High-pressure sanitary drain jetting & trap clearance",
-        "Grundfos & ESPA booster pump diagnostics and repairs",
-      ],
-      tag: "24/7 Rapid Response",
-    },
-    {
-      title: "DEWA Electrical Engineering",
-      subtitle: "Distribution Boards & Short Circuit Isolation",
-      desc: "Electrical safety is non-negotiable. Our certified engineers inspect, diagnose, and resolve breaker tripping, load imbalances, neutral faults, and LED architectural lighting installations.",
-      price: "From 150 AED",
-      slug: "electrical-db-short-circuit",
-      image: "/images/db_box_after.jpg",
-      icon: <Zap className="w-6 h-6 text-amber-400" />,
-      features: [
-        "Megger insulation & ground loop impedance safety check",
-        "Schneider & ABB RCBO/MCB circuit breaker replacement",
-        "Phase load balancing to stop recurring DEWA trippings",
-        "Smart home automation switches & dimmer integration",
-      ],
-      tag: "DEWA Certified",
-    },
-    {
-      title: "Jotun Luxury Villa Painting",
-      subtitle: "Interior & Exterior Protective Coatings",
-      desc: "Transform your home with immaculate surface preparation, crack filling, laser masking, and multiple coats of Jotun Fenomastic silk finish. 100% dust-free sanding system.",
-      price: "From 689 AED",
-      slug: "villa-painting-decor",
-      image: "/images/villa_paint_after.jpg",
-      icon: <Paintbrush className="w-6 h-6 text-emerald-400" />,
-      features: [
-        "Full floor and luxury furniture wrap with heavy-duty drop sheets",
-        "3-step gypsum crack repair and ultra-fine smooth sanding",
-        "Authentic Jotun Fenomastic zero-odor luxury paint applied",
-        "Post-service deep cleanup and detailed wall inspection",
-      ],
-      tag: "Jotun Velvet Silk",
-    },
-    {
-      title: "Precision Handyman & Smart Fixtures",
-      subtitle: "Heavy TV Mounting, Assembly & Carpentry",
-      desc: "Heavy-duty TV wall mounting with concealed in-wall cable management, customized furniture assembly, lock replacements, and delicate interior fixtures installed flawlessly.",
-      price: "From 110 AED",
-      slug: "furniture-assembly-tv-mounting",
-      image: "/images/hero_technician.jpg",
-      icon: <Hammer className="w-6 h-6 text-purple-400" />,
-      features: [
-        "Laser-level mounting on drywall, block, concrete, or tile",
-        "Concealed trunking for power, HDMI, and optical cords",
-        "IKEA, West Elm, and Italian designer furniture assembly",
-        "Heavy decorative mirror & crystal chandelier anchor fittings",
-      ],
-      tag: "Laser Guided",
-    },
-  ];
-
-  // 4. AMC Billing Toggle
-  const [amcBillingPeriod, setAmcBillingPeriod] = useState<"annual" | "monthly">("annual");
+  // 4. AMC Toggle
+  const [amcPeriod, setAmcPeriod] = useState<"annual" | "monthly">("annual");
 
   const amcTiers = [
     {
-      name: "Apartment Care",
-      target: "1 - 3 Bedroom Apartments",
+      name: "Apartment Essential",
+      subtitle: "1 - 3 Bedroom Apartments",
       priceAnnual: 1190,
       priceMonthly: 115,
       popular: false,
-      badge: "Standard Essential",
+      badge: "Essential Care",
       features: [
         "2x Scheduled AC Deep Chemical Cleans",
         "2x Plumbing & Drainage Checkups",
         "1x Electrical Load & Safety Audit",
-        "Unlimited Emergency Callouts",
-        "2-Hour Guaranteed Response Time",
-        "15% Discount on Spare Parts",
+        "Unlimited Emergency Callouts (24/7)",
+        "2-Hour Guaranteed Response Window",
+        "15% Off Any Replacement Spare Parts",
       ],
     },
     {
       name: "Executive Villa Care",
-      target: "3 - 5 Bedroom Luxury Villas",
+      subtitle: "3 - 5 Bedroom Luxury Villas",
       priceAnnual: 2890,
       priceMonthly: 275,
       popular: true,
-      badge: "Most Popular in Dubai",
+      badge: "Most Popular in UAE",
       features: [
         "4x Comprehensive AC Overhauls (Quarterly)",
         "3x Plumbing & Water Heater Health Checks",
         "2x DEWA Electrical DB Load Audits",
         "1x Roof & Gutter Drainage Clearance",
         "Priority 30-Minute Dispatch Window",
-        "Zero Labor Charges on All Repairs",
+        "Zero Labor Charges on All Normal Repairs",
         "Dedicated Facility Account Supervisor",
       ],
     },
     {
       name: "Presidential Estate VIP",
-      target: "Mansions, Penthouses & Large Compounds",
+      subtitle: "Mansions, Penthouses & Compounds",
       priceAnnual: 4990,
       priceMonthly: 475,
       popular: false,
@@ -305,22 +368,22 @@ export const Home2Client: React.FC<Home2Props> = ({
 
   // 5. Community Response Hub
   const communityHubs = [
-    { name: "Dubai Marina & JBR", activeVans: 3, avgEta: "18 mins", status: "Active Dispatch" },
-    { name: "Downtown Dubai & Business Bay", activeVans: 4, avgEta: "15 mins", status: "Active Dispatch" },
-    { name: "Palm Jumeirah", activeVans: 2, avgEta: "20 mins", status: "Active Dispatch" },
-    { name: "Arabian Ranches & Dubai Hills", activeVans: 3, avgEta: "22 mins", status: "Active Dispatch" },
-    { name: "Jumeirah Golf Estates & Damac Hills", activeVans: 2, avgEta: "25 mins", status: "Active Dispatch" },
-    { name: "Al Barsha, JVT & JVC", activeVans: 3, avgEta: "16 mins", status: "Active Dispatch" },
-    { name: "Mirdif & Dubai Silicon Oasis", activeVans: 2, avgEta: "24 mins", status: "Active Dispatch" },
-    { name: "Abu Dhabi Islands & Yas", activeVans: 2, avgEta: "35 mins", status: "Active Dispatch" },
+    { name: "Dubai Marina & JBR", activeVans: 3, avgEta: "18 mins" },
+    { name: "Downtown & Business Bay", activeVans: 4, avgEta: "15 mins" },
+    { name: "Palm Jumeirah", activeVans: 2, avgEta: "20 mins" },
+    { name: "Arabian Ranches & Dubai Hills", activeVans: 3, avgEta: "22 mins" },
+    { name: "Jumeirah Golf Estates & Damac Hills", activeVans: 2, avgEta: "25 mins" },
+    { name: "Al Barsha, JVT & JVC", activeVans: 3, avgEta: "16 mins" },
+    { name: "Mirdif & Dubai Silicon Oasis", activeVans: 2, avgEta: "24 mins" },
+    { name: "Abu Dhabi Islands & Yas", activeVans: 2, avgEta: "35 mins" },
   ];
 
-  const handleWhatsApp = (context = "Home 2 Page") => {
+  const handleWhatsApp = (context = "Home 2 Creative Light") => {
     Analytics.trackWhatsAppClick(context, calcLocation);
     const num = BUSINESS_SETTINGS.whatsappNumber.replace(/[^0-9]/g, "");
     window.open(
       `https://wa.me/${num}?text=Hello%20Al-Safwa%2C%20I%20need%20urgent%20service%20for%20${encodeURIComponent(
-        calcCategory.toUpperCase()
+        calcService.toUpperCase()
       )}%20in%20${encodeURIComponent(calcLocation)}`,
       "_blank"
     );
@@ -332,275 +395,396 @@ export const Home2Client: React.FC<Home2Props> = ({
   };
 
   return (
-    <div className="bg-[#0B0F19] text-slate-100 min-h-screen selection:bg-brand-500 selection:text-white font-sans antialiased">
-      {/* 1. TOP LIVE OPS TICKER */}
-      <div className="bg-gradient-to-r from-brand-950 via-slate-900 to-brand-950 border-b border-slate-800/80 text-xs py-2 px-4">
+    <div className="bg-[#FAFBFD] text-slate-900 min-h-screen selection:bg-brand-600 selection:text-white font-sans antialiased overflow-x-hidden">
+      {/* 1. TOP DISPATCH STATUS BAR (LIGHT & CRISP) */}
+      <div className="bg-white/90 backdrop-blur-md border-b border-slate-200/80 text-xs py-2.5 px-4 sticky top-0 z-40 shadow-sm">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-emerald-400 font-bold uppercase tracking-wider text-[10px] sm:text-[11px]">
-              Live Dispatch Radar:
+            <span className="font-extrabold text-slate-900 tracking-tight text-[11px] sm:text-xs">
+              ⚡ LIVE DISPATCH ACTIVE:
             </span>
-            <span className="text-slate-300 hidden sm:inline">
-              18 Mobile Service Units currently active across Dubai & Abu Dhabi
+            <span className="text-slate-600 hidden sm:inline text-xs font-medium">
+              18 Mobile Service Units in Dubai • Avg Arrival: <strong className="text-slate-900 font-bold">21 Mins</strong>
             </span>
-            <span className="text-slate-300 sm:hidden">18 Vans active in Dubai</span>
+            <span className="text-slate-600 sm:hidden text-[11px]">18 Vans on Dubai Roads</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px]">
-            <span className="text-slate-400 hidden md:inline">
-              ⚡ Avg Response: <strong className="text-white">21 Minutes</strong>
+          <div className="flex items-center gap-4 text-xs">
+            <span className="text-emerald-700 font-bold bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full text-[11px] hidden md:inline-flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              <span>90-Day Unconditional Warranty</span>
             </span>
-            <span className="text-amber-400 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>90-Day Guarantee</span>
-            </span>
+            <button
+              onClick={handlePhone}
+              className="font-bold text-slate-800 hover:text-brand-600 flex items-center gap-1 text-[11px] sm:text-xs"
+            >
+              <Phone className="w-3.5 h-3.5 text-brand-600" />
+              <span>{BUSINESS_SETTINGS.phone}</span>
+            </button>
           </div>
         </div>
       </div>
 
-      {/* 2. ULTRA-MODERN LUXURY HERO SECTION */}
-      <section className="relative pt-10 pb-20 overflow-hidden bg-radial-glow">
-        {/* Glow Spheres */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand-500/10 blur-[140px] pointer-events-none rounded-full" />
-        <div className="absolute top-1/3 right-10 w-[300px] h-[300px] bg-emerald-500/10 blur-[120px] pointer-events-none rounded-full" />
+      {/* 2. CREATIVE HERO: THE BENTO SERVICE STUDIO */}
+      <section className="relative pt-12 pb-20 overflow-hidden bg-gradient-to-b from-[#F3F6FC] via-[#FAFBFD] to-[#FAFBFD]">
+        {/* Soft Modern Gradient Orbs */}
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-brand-200/40 via-blue-200/30 to-amber-100/40 blur-[100px] pointer-events-none rounded-full" />
+        <div className="absolute top-40 right-10 w-[300px] h-[300px] bg-emerald-200/30 blur-[90px] pointer-events-none rounded-full" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Main Hero Header */}
           <div className="text-center max-w-3xl mx-auto mb-10 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-bold tracking-wide">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
-              <span>DUBAI'S 5-STAR PROPERTY & FACILITY MAINTENANCE</span>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200/90 text-slate-800 text-xs font-bold shadow-sm">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              <span className="tracking-wide">DUBAI'S 5-STAR HOME & PROPERTY CARE</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             </div>
 
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.1] font-heading">
-              World-Class Technical Care <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-emerald-400">
-                At Your Doorstep in 25 Mins.
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-950 leading-[1.12] font-heading">
+              Flawless Technical Care. <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-blue-600 to-emerald-600">
+                At Your Villa in 25 Minutes.
               </span>
             </h1>
 
-            <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-              Certified master engineers for AC cooling overhauls, emergency plumbing, DEWA electrical, and villa maintenance with 100% transparent pricing.
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
+              AC diagnostics, emergency plumbing, DEWA electrical overhauls, and luxury painting. Fixed upfront pricing with 90-day parts & labor warranty.
             </p>
           </div>
 
-          {/* INTERACTIVE DIAGNOSTIC PROBLEM SELECTOR (THE "WOW" CONTROLLER) */}
-          <div className="max-w-5xl mx-auto bg-slate-900/90 backdrop-blur-xl border border-slate-700/70 rounded-3xl p-4 sm:p-7 shadow-2xl shadow-black/60">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800 gap-2 flex-wrap">
+          {/* CREATIVE INTERACTIVE "PROBLEM-TO-SOLUTION" BENTO CONTROLLER */}
+          <div className="max-w-5xl mx-auto bg-white/95 backdrop-blur-xl border border-slate-200 rounded-3xl p-5 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)]">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 gap-2 flex-wrap">
               <div className="flex items-center gap-2">
-                <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
-                <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                  Select Your Issue For Instant Dispatch:
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-extrabold text-slate-800 uppercase tracking-wider font-heading">
+                  Select Issue For Instant Diagnostic & Fixed Quote:
                 </span>
               </div>
-              <span className="text-[11px] text-slate-400 bg-slate-800 px-2.5 py-1 rounded-full border border-slate-700">
-                Live Pricing & Verified Diagnosis
+              <span className="text-[11px] font-bold text-brand-700 bg-brand-50 border border-brand-200 px-3 py-1 rounded-full">
+                ⚡ Zero Callout Surcharge
               </span>
             </div>
 
-            {/* Diagnostic Tabs */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mt-4">
+            {/* Quick Diagnostic Tabs */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 mt-5">
               {heroIssues.map((issue, idx) => {
-                const isActive = heroDiagnosticIndex === idx;
+                const isActive = heroIssueIdx === idx;
                 return (
                   <button
                     key={issue.id}
-                    onClick={() => setHeroDiagnosticIndex(idx)}
-                    className={`text-left p-3 rounded-2xl transition-all duration-200 flex flex-col justify-between border ${
+                    onClick={() => setHeroIssueIdx(idx)}
+                    className={`text-left p-3.5 rounded-2xl transition-all duration-200 flex flex-col justify-between border ${
                       isActive
-                        ? "bg-brand-600 text-white border-brand-400 shadow-lg shadow-brand-600/30 scale-[1.02]"
-                        : "bg-slate-800/60 hover:bg-slate-800 text-slate-300 border-slate-700/60 hover:border-slate-600"
+                        ? "bg-gradient-to-b from-brand-600 to-brand-700 text-white border-brand-600 shadow-lg shadow-brand-500/25 scale-[1.02]"
+                        : "bg-slate-50/80 hover:bg-slate-100/80 text-slate-700 border-slate-200/80 hover:border-slate-300"
                     }`}
                   >
-                    <span className="text-xs font-bold leading-snug">{issue.tabLabel}</span>
-                    <div className="mt-2 flex items-center justify-between text-[10px]">
-                      <span className={isActive ? "text-blue-100" : "text-slate-400"}>From {issue.price}</span>
-                      <ChevronRight className={`w-3 h-3 ${isActive ? "text-white" : "text-slate-500"}`} />
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-xs font-extrabold leading-snug">{issue.tabName}</span>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between text-[11px]">
+                      <span className={`font-bold ${isActive ? "text-blue-100" : "text-brand-600"}`}>
+                        From {issue.price}
+                      </span>
+                      <ChevronRight className={`w-3.5 h-3.5 ${isActive ? "text-white" : "text-slate-400"}`} />
                     </div>
                   </button>
                 );
               })}
             </div>
 
-            {/* Active Issue Visual Card Display */}
-            <div className="mt-6 bg-slate-950/80 border border-slate-800 rounded-2xl p-4 sm:p-6 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-              {/* Left Info */}
+            {/* Selected Diagnostic Live Visual Showcase */}
+            <div className="mt-6 bg-[#FAFBFD] border border-slate-200/90 rounded-2xl p-5 sm:p-7 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+              {/* Left Details */}
               <div className="md:col-span-7 space-y-4">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+                  <span className="px-3 py-1 rounded-full bg-emerald-100/80 border border-emerald-300 text-emerald-800 text-xs font-bold">
                     ⚡ {currentHeroIssue.badge}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-slate-800 text-slate-300 text-xs font-semibold">
+                  <span className="px-3 py-1 rounded-full bg-slate-200/70 text-slate-800 text-xs font-bold">
                     ⏱️ ETA: {currentHeroIssue.eta}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-extrabold">
+                  <span className="px-3 py-1 rounded-full bg-amber-100 border border-amber-300 text-amber-900 text-xs font-extrabold">
                     💰 {currentHeroIssue.price} Fixed Labor
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-lg sm:text-xl font-bold text-white font-heading">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-slate-950 font-heading">
                     {currentHeroIssue.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">
-                    <strong className="text-slate-200">Symptom:</strong> {currentHeroIssue.symptom}
-                  </p>
-                  <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">
-                    <strong className="text-emerald-400">Resolution:</strong> {currentHeroIssue.solution}
-                  </p>
+                  <div className="mt-2 space-y-1.5 text-xs sm:text-sm text-slate-600">
+                    <p>
+                      <strong className="text-slate-900 font-bold">Symptoms Identified:</strong>{" "}
+                      {currentHeroIssue.symptom}
+                    </p>
+                    <p>
+                      <strong className="text-brand-600 font-bold">Standard Procedure:</strong>{" "}
+                      {currentHeroIssue.solution}
+                    </p>
+                  </div>
                 </div>
 
-                {/* Call-to-actions */}
+                {/* Direct Action Buttons */}
                 <div className="flex items-center gap-3 pt-2 flex-wrap">
                   <button
                     onClick={() => openQuoteModal(currentHeroIssue.serviceSlug)}
-                    className="px-5 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-blue-600 hover:from-brand-500 hover:to-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-brand-600/30 flex items-center gap-2 transition transform active:scale-95"
+                    className="px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-brand-500/20 flex items-center gap-2 transition transform active:scale-95"
                   >
-                    <span>Instant Booking Dispatch</span>
+                    <span>Instant Dispatch (25 Mins)</span>
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
                   <button
                     onClick={() => handleWhatsApp(`Hero Diagnostic: ${currentHeroIssue.title}`)}
-                    className="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2 transition transform active:scale-95"
+                    className="px-4 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md flex items-center gap-2 transition transform active:scale-95"
                   >
                     <MessageSquare className="w-4 h-4" />
-                    <span>WhatsApp Dispatch</span>
+                    <span>WhatsApp Engineer</span>
                   </button>
 
                   <button
                     onClick={handlePhone}
-                    className="px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs sm:text-sm flex items-center gap-2 transition"
+                    className="px-4 py-3 rounded-xl bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 font-bold text-xs sm:text-sm flex items-center gap-2 transition"
                   >
-                    <Phone className="w-4 h-4 text-emerald-400" />
+                    <Phone className="w-4 h-4 text-brand-600" />
                     <span>{BUSINESS_SETTINGS.phone}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Right Visual Image */}
-              <div className="md:col-span-5 relative h-48 sm:h-56 rounded-xl overflow-hidden border border-slate-700 group shadow-inner">
+              {/* Right Image */}
+              <div className="md:col-span-5 relative h-52 sm:h-64 rounded-2xl overflow-hidden border border-slate-200 shadow-md group">
                 <Image
                   src={currentHeroIssue.image}
                   alt={currentHeroIssue.title}
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs">
-                  <span className="bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg text-white font-bold border border-white/10">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-white font-bold">
+                  <span className="bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20 text-[11px]">
                     Verified Technical Procedure
                   </span>
-                  <span className="text-emerald-400 font-extrabold flex items-center gap-1">
-                    <CheckCircle2 className="w-3.5 h-3.5" /> 100% Resolved
+                  <span className="text-emerald-300 font-extrabold flex items-center gap-1">
+                    <CheckCircle2 className="w-4 h-4" /> 100% Fixed
                   </span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Quick Trust Highlights */}
+          {/* Trust Value Badges (4 Bento Cards) */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto mt-8">
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/20">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">25-Min Dispatch</div>
-                <div className="text-[11px] text-slate-400">All Dubai communities</div>
+                <div className="text-xs font-extrabold text-slate-900">25-Min Dispatch</div>
+                <div className="text-[11px] text-slate-500">Across Dubai & Abu Dhabi</div>
               </div>
             </div>
 
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">90-Day Warranty</div>
-                <div className="text-[11px] text-slate-400">Parts & labor covered</div>
+                <div className="text-xs font-extrabold text-slate-900">90-Day Warranty</div>
+                <div className="text-[11px] text-slate-500">Parts & labor covered</div>
               </div>
             </div>
 
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                <Star className="w-5 h-5 fill-emerald-400" />
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100">
+                <Star className="w-5 h-5 fill-emerald-500 text-emerald-500" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">4.95 ★ Rating</div>
-                <div className="text-[11px] text-slate-400">1,480+ Happy residents</div>
+                <div className="text-xs font-extrabold text-slate-900">4.95 ★ Rating</div>
+                <div className="text-[11px] text-slate-500">1,480+ Happy residents</div>
               </div>
             </div>
 
-            <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 border border-purple-500/20">
-                <Award className="w-5 h-5" />
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-sm hover:shadow-md transition">
+              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 border border-purple-100">
+                <BadgeCheck className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-xs font-bold text-white">DEWA Certified</div>
-                <div className="text-[11px] text-slate-400">Master qualified team</div>
+                <div className="text-xs font-extrabold text-slate-900">DEWA Certified</div>
+                <div className="text-[11px] text-slate-500">Master qualified team</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* 3. INTERACTIVE LIVE BOOKING & COST TERMINAL (THE CALCULATOR) */}
-      <section className="py-16 bg-slate-950 border-t border-slate-800/80 relative">
+      {/* 3. NOVEL CREATIVE FEATURE: ROOM-BY-ROOM VILLA DIAGNOSTIC STUDIO */}
+      <section className="py-20 bg-white border-t border-slate-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-extrabold">
+              <Home className="w-3.5 h-3.5" />
+              <span>INTERACTIVE PROPERTY EXPLORER</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight font-heading">
+              Explore Common Issues by Room & Area
+            </h2>
+            <p className="text-sm text-slate-600">
+              Select any zone in your apartment or villa to see transparent standard fixes, parts used, and fixed upfront labor rates.
+            </p>
+          </div>
+
+          {/* Room Selector Pills */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto mb-8">
+            {(
+              [
+                { id: "living", label: "Living & Bed", icon: <Sofa className="w-4 h-4" /> },
+                { id: "kitchen", label: "Kitchen & Laundry", icon: <Utensils className="w-4 h-4" /> },
+                { id: "bathroom", label: "Bathrooms & Water", icon: <Bath className="w-4 h-4" /> },
+                { id: "villa", label: "Villa & Roof", icon: <Sun className="w-4 h-4" /> },
+              ] as const
+            ).map((room) => {
+              const isSelected = selectedRoom === room.id;
+              return (
+                <button
+                  key={room.id}
+                  onClick={() => setSelectedRoom(room.id)}
+                  className={`py-3.5 px-4 rounded-2xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all border ${
+                    isSelected
+                      ? "bg-slate-900 text-white border-slate-900 shadow-md scale-[1.02]"
+                      : "bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200"
+                  }`}
+                >
+                  {room.icon}
+                  <span>{room.label}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Active Room Detail Grid */}
+          {(() => {
+            const cur = roomDiagnostics[selectedRoom];
+            return (
+              <div className="max-w-5xl mx-auto bg-slate-50/70 border border-slate-200/90 rounded-3xl p-6 sm:p-8">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-200 flex-wrap gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm">
+                      {cur.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-extrabold text-slate-950 font-heading">
+                        {cur.name}
+                      </h3>
+                      <p className="text-xs text-slate-500">{cur.description}</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100/70 border border-emerald-300 px-3 py-1 rounded-full">
+                    ⚡ Same-Day Resolution
+                  </span>
+                </div>
+
+                {/* Issues Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+                  {cur.issues.map((item, i) => (
+                    <div
+                      key={i}
+                      className="bg-white border border-slate-200/80 rounded-2xl p-4.5 flex flex-col justify-between hover:border-brand-400 hover:shadow-md transition group space-y-3"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-2">
+                          <h4 className="font-extrabold text-sm text-slate-900 group-hover:text-brand-600 transition">
+                            {item.name}
+                          </h4>
+                          <span className="text-xs font-extrabold text-amber-900 bg-amber-100 px-2 py-0.5 rounded shrink-0">
+                            {item.price}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                          <strong className="text-slate-700">Solution:</strong> {item.fix}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                          <CheckCircle className="w-3.5 h-3.5" /> 90-Day Covered
+                        </span>
+                        <button
+                          onClick={() => openQuoteModal(item.slug)}
+                          className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1"
+                        >
+                          <span>Book Fix</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+        </div>
+      </section>
+
+      {/* 4. INTERACTIVE COST ESTIMATOR TERMINAL */}
+      <section className="py-20 bg-[#F4F7FC] border-t border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             {/* Left Narrative */}
             <div className="lg:col-span-5 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-bold">
                 <Sliders className="w-3.5 h-3.5" />
                 <span>UPFRONT TRANSPARENT PRICING</span>
               </div>
 
-              <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
+              <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight font-heading">
                 Instant Price Estimator & Booking Terminal
               </h2>
 
-              <p className="text-sm text-slate-300 leading-relaxed">
-                No surprise bills or hidden travel surcharges. Select your service category, property size, and location to see your transparent upfront labor cost immediately.
+              <p className="text-sm text-slate-600 leading-relaxed">
+                No surprise invoices, hidden travel surcharges, or inflated parts. Customize your property size and service below to see your upfront fixed rate.
               </p>
 
               <div className="space-y-3 pt-2">
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs sm:text-sm text-slate-300">
-                    Includes full diagnostic inspection with digital report.
+                  <span className="text-xs sm:text-sm text-slate-700">
+                    Includes digital thermal & diagnostic inspection report.
                   </span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs sm:text-sm text-slate-300">
-                    Genuine OEM replacement parts with manufacturer serials.
+                  <span className="text-xs sm:text-sm text-slate-700">
+                    OEM genuine replacement parts with manufacturer serial warranty.
                   </span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3 h-3" />
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs sm:text-sm text-slate-300">
-                    Cash, Credit Card, Apple Pay & Tabby/Tamara 4-split available on arrival.
+                  <span className="text-xs sm:text-sm text-slate-700">
+                    Card, Cash, Apple Pay & Tabby 4-month split available on site.
                   </span>
                 </div>
               </div>
             </div>
 
             {/* Right Interactive Card */}
-            <div className="lg:col-span-7 bg-slate-900 border border-slate-700/80 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
               {/* Step 1: Category */}
               <div>
-                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2">
-                  1. Select Service Category:
+                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-2 font-heading">
+                  1. Select Service Discipline:
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {[
@@ -612,11 +796,11 @@ export const Home2Client: React.FC<Home2Props> = ({
                   ].map((c) => (
                     <button
                       key={c.id}
-                      onClick={() => setCalcCategory(c.id)}
+                      onClick={() => setCalcService(c.id)}
                       className={`p-3 rounded-xl text-xs font-bold flex flex-col items-center gap-1.5 transition border ${
-                        calcCategory === c.id
-                          ? "bg-brand-600 text-white border-brand-400 shadow-md"
-                          : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750"
+                        calcService === c.id
+                          ? "bg-brand-600 text-white border-brand-600 shadow-md"
+                          : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                       }`}
                     >
                       {c.icon}
@@ -628,8 +812,8 @@ export const Home2Client: React.FC<Home2Props> = ({
 
               {/* Step 2: Property Type */}
               <div>
-                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2">
-                  2. Select Property Layout:
+                <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-2 font-heading">
+                  2. Select Property Size:
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
                   {[
@@ -637,15 +821,15 @@ export const Home2Client: React.FC<Home2Props> = ({
                     { id: "1bed", label: "1-Bed Apt" },
                     { id: "2bed", label: "2-3 Bed Apt" },
                     { id: "villa", label: "3-4 Bed Villa" },
-                    { id: "luxury", label: "5+ Bed Mansion" },
+                    { id: "luxury", label: "5+ Bed Villa" },
                   ].map((p) => (
                     <button
                       key={p.id}
                       onClick={() => setCalcProperty(p.id)}
                       className={`py-2.5 px-2 rounded-xl text-xs font-bold text-center transition border ${
                         calcProperty === p.id
-                          ? "bg-emerald-600 text-white border-emerald-400 shadow-md"
-                          : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750"
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-md"
+                          : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
                       }`}
                     >
                       {p.label}
@@ -657,13 +841,13 @@ export const Home2Client: React.FC<Home2Props> = ({
               {/* Step 3: Location Hub */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2">
+                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-2 font-heading">
                     3. Your Community Area:
                   </label>
                   <select
                     value={calcLocation}
                     onChange={(e) => setCalcLocation(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl py-2.5 px-3 text-xs text-white focus:outline-none focus:border-brand-500"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2.5 px-3 text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-600"
                   >
                     <option value="Dubai Marina">Dubai Marina & JBR</option>
                     <option value="Downtown Dubai">Downtown & Business Bay</option>
@@ -677,16 +861,16 @@ export const Home2Client: React.FC<Home2Props> = ({
                 </div>
 
                 <div>
-                  <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-2">
-                    4. Dispatch Priority:
+                  <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-2 font-heading">
+                    4. Dispatch Speed:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setCalcUrgency("emergency")}
                       className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 border ${
                         calcUrgency === "emergency"
-                          ? "bg-rose-600/90 text-white border-rose-400"
-                          : "bg-slate-800 text-slate-300 border-slate-700"
+                          ? "bg-rose-50 text-rose-800 border-rose-300"
+                          : "bg-slate-50 text-slate-700 border-slate-200"
                       }`}
                     >
                       <span>🚨 25-Min Urgent</span>
@@ -696,43 +880,43 @@ export const Home2Client: React.FC<Home2Props> = ({
                       onClick={() => setCalcUrgency("scheduled")}
                       className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 border ${
                         calcUrgency === "scheduled"
-                          ? "bg-blue-600/90 text-white border-blue-400"
-                          : "bg-slate-800 text-slate-300 border-slate-700"
+                          ? "bg-blue-50 text-blue-800 border-blue-300"
+                          : "bg-slate-50 text-slate-700 border-slate-200"
                       }`}
                     >
-                      <span>📅 Pick Slot</span>
+                      <span>📅 Book Slot</span>
                     </button>
                   </div>
                 </div>
               </div>
 
               {/* Price Calculation Output Strip */}
-              <div className="bg-slate-950 border border-slate-800 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div>
-                  <div className="text-xs text-slate-400">Estimated Upfront Labor & Inspection:</div>
+                  <div className="text-xs text-slate-500 font-medium">Estimated Upfront Labor & Diagnostics:</div>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl sm:text-4xl font-extrabold text-white font-heading">
-                      {calculateCost()} AED
+                    <span className="text-3xl sm:text-4xl font-extrabold text-slate-950 font-heading">
+                      {calculateEstimate()} AED
                     </span>
-                    <span className="text-xs text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span className="text-xs text-emerald-800 font-bold bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                       Zero Callout Fee
                     </span>
                   </div>
-                  <div className="text-[11px] text-slate-400 mt-0.5">
-                    Assigned: Mobile Van #4 stationed in {calcLocation}
+                  <div className="text-[11px] text-slate-500 mt-0.5">
+                    Assigned: Mobile Van #4 stationed near {calcLocation}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <button
-                    onClick={() => openQuoteModal(`${calcCategory}-repair`)}
-                    className="flex-1 sm:flex-initial px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs shadow-lg transition"
+                    onClick={() => openQuoteModal(`${calcService}-repair`)}
+                    className="flex-1 sm:flex-initial px-5 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition"
                   >
                     Confirm Booking
                   </button>
                   <button
-                    onClick={() => handleWhatsApp(`Booking Estimate: ${calculateCost()} AED for ${calcCategory}`)}
-                    className="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-md transition"
+                    onClick={() => handleWhatsApp(`Booking Estimate: ${calculateEstimate()} AED for ${calcService}`)}
+                    className="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold shadow-md transition"
                     title="WhatsApp Estimate"
                   >
                     <MessageSquare className="w-4 h-4" />
@@ -744,172 +928,61 @@ export const Home2Client: React.FC<Home2Props> = ({
         </div>
       </section>
 
-      {/* 4. LUXURY SERVICES TABBED DEEP-DIVE SHOWCASE */}
-      <section className="py-20 bg-slate-900 relative">
+      {/* 5. VISUAL BEFORE & AFTER TRANSFORMATION SHOWCASE */}
+      <section className="py-20 bg-white border-t border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-            <span className="text-xs font-extrabold text-brand-400 uppercase tracking-wider bg-brand-500/10 border border-brand-500/30 px-3 py-1 rounded-full">
-              Full Spectrum Facility Care
+            <span className="text-xs font-extrabold text-amber-800 uppercase tracking-wider bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
+              Real Workmanship Proof
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
-              Engineering Excellence Across 5 Core Domains
-            </h2>
-            <p className="text-sm text-slate-300">
-              Each discipline is operated by specialized, dedicated crews equipped with top European test equipment.
-            </p>
-          </div>
-
-          {/* Service Selector Tabs */}
-          <div className="flex items-center justify-center gap-2 flex-wrap mb-8">
-            {luxuryServices.map((srv, idx) => (
-              <button
-                key={srv.title}
-                onClick={() => setActiveServiceTab(idx)}
-                className={`px-4 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2 border ${
-                  activeServiceTab === idx
-                    ? "bg-brand-600 text-white border-brand-400 shadow-lg shadow-brand-600/30"
-                    : "bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-750"
-                }`}
-              >
-                {srv.icon}
-                <span>{srv.title.split(" ")[0]}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* Active Service Showcase Card */}
-          {(() => {
-            const cur = luxuryServices[activeServiceTab];
-            return (
-              <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                {/* Left Photo */}
-                <div className="lg:col-span-6 relative h-72 sm:h-96 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
-                  <Image src={cur.image} alt={cur.title} fill className="object-cover" />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-amber-400 text-xs font-bold">
-                      {cur.tag}
-                    </span>
-                  </div>
-                  <div className="absolute bottom-4 left-4 right-4 bg-slate-950/80 backdrop-blur-md p-3.5 rounded-xl border border-slate-700/80 flex items-center justify-between">
-                    <div>
-                      <div className="text-[11px] text-slate-400">Starting Price</div>
-                      <div className="text-sm font-extrabold text-white">{cur.price}</div>
-                    </div>
-                    <button
-                      onClick={() => openQuoteModal(cur.slug)}
-                      className="px-3 py-1.5 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs flex items-center gap-1"
-                    >
-                      <span>Book Service</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Right Details */}
-                <div className="lg:col-span-6 space-y-5">
-                  <div>
-                    <span className="text-xs font-bold text-brand-400 tracking-wide uppercase">
-                      {cur.subtitle}
-                    </span>
-                    <h3 className="text-2xl sm:text-3xl font-extrabold text-white font-heading mt-1">
-                      {cur.title}
-                    </h3>
-                    <p className="text-sm text-slate-300 mt-3 leading-relaxed">{cur.desc}</p>
-                  </div>
-
-                  <div className="space-y-3 pt-2">
-                    <div className="text-xs font-bold text-slate-200 uppercase tracking-wider">
-                      Technical Inclusions:
-                    </div>
-                    {cur.features.map((feat, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="w-5 h-5 rounded-full bg-brand-500/20 text-brand-400 flex items-center justify-center shrink-0 mt-0.5">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                        </div>
-                        <span className="text-xs sm:text-sm text-slate-300">{feat}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-4">
-                    <Link
-                      href={`/services/ac-services/${cur.slug}`}
-                      className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-2 transition"
-                    >
-                      <span>View Technical Scope</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-
-                    <button
-                      onClick={() => handleWhatsApp(`Service Inquiry: ${cur.title}`)}
-                      className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 transition shadow-md"
-                    >
-                      <MessageSquare className="w-3.5 h-3.5" />
-                      <span>WhatsApp Specialist</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            );
-          })()}
-        </div>
-      </section>
-
-      {/* 5. INTERACTIVE BEFORE & AFTER SLIDER SHOWCASE */}
-      <section className="py-20 bg-slate-950 border-t border-slate-800/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-            <span className="text-xs font-extrabold text-amber-400 uppercase tracking-wider bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-full">
-              Proof in Visual Results
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight font-heading">
               Real Dubai Transformations (Before vs After)
             </h2>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-600">
               Drag the interactive slider to inspect our restoration standards on AC coils, electrical distribution boards, water heaters, and luxury villa walls.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-8 shadow-2xl">
+          <div className="max-w-4xl mx-auto bg-slate-50 border border-slate-200 rounded-3xl p-4 sm:p-8 shadow-lg">
             <BeforeAfterSlider />
           </div>
         </div>
       </section>
 
       {/* 6. ANNUAL MAINTENANCE CONTRACTS (AMC) */}
-      <section className="py-20 bg-slate-900 relative">
+      <section className="py-20 bg-[#FAFBFD] border-t border-slate-200/80 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-10 space-y-3">
-            <span className="text-xs font-extrabold text-emerald-400 uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 rounded-full">
+            <span className="text-xs font-extrabold text-emerald-800 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
               Zero Stress Property Care
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight font-heading">
               Annual Villa & Apartment Maintenance Contracts
             </h2>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-600">
               Never worry about AC breakdowns, leaking pipes, or electrical outages again. Unlimited callouts and zero labor fees year-round.
             </p>
 
             {/* Billing Switch */}
             <div className="pt-4 flex items-center justify-center gap-3">
-              <span className={`text-xs font-bold ${amcBillingPeriod === "monthly" ? "text-white" : "text-slate-400"}`}>
+              <span className={`text-xs font-bold ${amcPeriod === "monthly" ? "text-slate-900" : "text-slate-400"}`}>
                 Pay Monthly
               </span>
               <button
-                onClick={() => setAmcBillingPeriod(amcBillingPeriod === "annual" ? "monthly" : "annual")}
-                className="w-14 h-7 rounded-full bg-slate-800 border border-slate-700 p-1 flex items-center transition"
+                onClick={() => setAmcPeriod(amcPeriod === "annual" ? "monthly" : "annual")}
+                className="w-14 h-7 rounded-full bg-slate-200 p-1 flex items-center transition"
               >
                 <div
-                  className={`w-5 h-5 rounded-full bg-brand-500 transition-transform ${
-                    amcBillingPeriod === "annual" ? "translate-x-7" : "translate-x-0"
+                  className={`w-5 h-5 rounded-full bg-brand-600 transition-transform ${
+                    amcPeriod === "annual" ? "translate-x-7" : "translate-x-0"
                   }`}
                 />
               </button>
               <div className="flex items-center gap-1.5">
-                <span className={`text-xs font-bold ${amcBillingPeriod === "annual" ? "text-white" : "text-slate-400"}`}>
+                <span className={`text-xs font-bold ${amcPeriod === "annual" ? "text-slate-900" : "text-slate-400"}`}>
                   Pay Annually
                 </span>
-                <span className="text-[10px] font-extrabold text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/30">
+                <span className="text-[10px] font-extrabold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                   Save 15%
                 </span>
               </div>
@@ -923,48 +996,48 @@ export const Home2Client: React.FC<Home2Props> = ({
                 key={tier.name}
                 className={`rounded-3xl p-6 sm:p-8 flex flex-col justify-between transition-all duration-200 border relative ${
                   tier.popular
-                    ? "bg-gradient-to-b from-slate-900 to-brand-950/80 border-amber-400/80 shadow-2xl shadow-amber-500/10 md:-translate-y-2"
-                    : "bg-slate-950/90 border-slate-800 hover:border-slate-700"
+                    ? "bg-white border-amber-400 shadow-xl shadow-amber-500/10 md:-translate-y-2"
+                    : "bg-white border-slate-200 hover:border-slate-300 shadow-sm"
                 }`}
               >
                 {tier.popular && (
-                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-extrabold text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 font-extrabold text-[11px] px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
                     ★ {tier.badge}
                   </div>
                 )}
 
                 <div className="space-y-4">
                   <div>
-                    <span className="text-xs font-bold text-slate-400">{tier.target}</span>
-                    <h3 className="text-xl font-bold text-white font-heading mt-0.5">{tier.name}</h3>
+                    <span className="text-xs font-bold text-slate-500">{tier.subtitle}</span>
+                    <h3 className="text-xl font-bold text-slate-950 font-heading mt-0.5">{tier.name}</h3>
                   </div>
 
-                  <div className="flex items-baseline gap-1 py-2 border-y border-slate-800">
-                    <span className="text-3xl sm:text-4xl font-extrabold text-white font-heading">
-                      {amcBillingPeriod === "annual" ? tier.priceAnnual : tier.priceMonthly}
+                  <div className="flex items-baseline gap-1 py-2 border-y border-slate-100">
+                    <span className="text-3xl sm:text-4xl font-extrabold text-slate-950 font-heading">
+                      {amcPeriod === "annual" ? tier.priceAnnual : tier.priceMonthly}
                     </span>
-                    <span className="text-xs text-slate-400 font-bold">
-                      AED / {amcBillingPeriod === "annual" ? "year" : "month"}
+                    <span className="text-xs text-slate-500 font-bold">
+                      AED / {amcPeriod === "annual" ? "year" : "month"}
                     </span>
                   </div>
 
                   <div className="space-y-2.5 pt-2">
                     {tier.features.map((f, i) => (
-                      <div key={i} className="flex items-start gap-2.5 text-xs text-slate-300">
-                        <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div key={i} className="flex items-start gap-2.5 text-xs text-slate-700 font-medium">
+                        <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                         <span>{f}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-slate-800/80">
+                <div className="pt-6 mt-6 border-t border-slate-100">
                   <button
                     onClick={() => openQuoteModal("amc-package")}
-                    className={`w-full py-3 rounded-xl font-bold text-xs transition shadow-md ${
+                    className={`w-full py-3 rounded-xl font-bold text-xs transition shadow-sm ${
                       tier.popular
-                        ? "bg-amber-400 hover:bg-amber-300 text-slate-950"
-                        : "bg-slate-800 hover:bg-slate-700 text-white border border-slate-700"
+                        ? "bg-amber-400 hover:bg-amber-500 text-slate-950"
+                        : "bg-slate-900 hover:bg-slate-800 text-white"
                     }`}
                   >
                     Subscribe to {tier.name}
@@ -977,26 +1050,26 @@ export const Home2Client: React.FC<Home2Props> = ({
           <div className="text-center mt-8">
             <Link
               href="/amc"
-              className="text-xs font-bold text-brand-400 hover:text-brand-300 transition inline-flex items-center gap-1 underline underline-offset-4"
+              className="text-xs font-bold text-brand-600 hover:text-brand-700 transition inline-flex items-center gap-1 underline underline-offset-4"
             >
-              <span>View complete AMC scope breakdown and commercial contracts</span>
+              <span>View full AMC scope breakdown and corporate facility contracts</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 7. LIVE COMMUNITY DISPATCH RADAR */}
-      <section className="py-20 bg-slate-950 border-t border-slate-800/80">
+      {/* 7. LIVE FLEET COVERAGE MAP */}
+      <section className="py-20 bg-white border-t border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-            <span className="text-xs font-extrabold text-blue-400 uppercase tracking-wider bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full">
+            <span className="text-xs font-extrabold text-blue-700 uppercase tracking-wider bg-blue-50 border border-blue-200 px-3 py-1 rounded-full">
               Full Coverage Map
             </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight font-heading">
               Active Vans in Your Dubai Neighborhood
             </h2>
-            <p className="text-sm text-slate-300">
+            <p className="text-sm text-slate-600">
               Our decentralized mobile maintenance fleet is pre-stationed across major residential hubs for sub-25 minute arrival.
             </p>
           </div>
@@ -1005,22 +1078,22 @@ export const Home2Client: React.FC<Home2Props> = ({
             {communityHubs.map((hub) => (
               <div
                 key={hub.name}
-                className="bg-slate-900 border border-slate-800 hover:border-brand-500/60 rounded-2xl p-4 transition-all duration-200 space-y-3 group"
+                className="bg-slate-50 border border-slate-200 hover:border-brand-500 rounded-2xl p-4 transition-all duration-200 space-y-3 group shadow-sm"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold">
+                  <div className="flex items-center gap-1.5 text-emerald-700 text-xs font-bold">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
                     <span>{hub.activeVans} Vans Assigned</span>
                   </div>
-                  <span className="text-[10px] text-slate-400 bg-slate-800 px-2 py-0.5 rounded">
+                  <span className="text-[10px] text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded font-bold">
                     ETA: {hub.avgEta}
                   </span>
                 </div>
 
-                <div className="font-bold text-sm text-white group-hover:text-brand-400 transition">
+                <div className="font-extrabold text-sm text-slate-900 group-hover:text-brand-600 transition">
                   {hub.name}
                 </div>
 
@@ -1029,9 +1102,9 @@ export const Home2Client: React.FC<Home2Props> = ({
                     setCalcLocation(hub.name.split("&")[0].trim());
                     handleWhatsApp(`Request van in ${hub.name}`);
                   }}
-                  className="w-full py-1.5 rounded-lg bg-slate-800 hover:bg-brand-600 text-slate-200 hover:text-white text-xs font-semibold transition flex items-center justify-center gap-1"
+                  className="w-full py-1.5 rounded-lg bg-white hover:bg-brand-600 text-slate-700 hover:text-white border border-slate-200 text-xs font-semibold transition flex items-center justify-center gap-1"
                 >
-                  <MapPin className="w-3.5 h-3.5 text-emerald-400" />
+                  <MapPin className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Dispatch To My Villa</span>
                 </button>
               </div>
@@ -1041,19 +1114,19 @@ export const Home2Client: React.FC<Home2Props> = ({
       </section>
 
       {/* 8. CLIENT REVIEWS & VERIFIED STORIES */}
-      <section className="py-20 bg-slate-900 border-t border-slate-800">
+      <section className="py-20 bg-[#F4F7FC] border-t border-slate-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
-            <div className="flex items-center justify-center gap-1 text-amber-400">
+            <div className="flex items-center justify-center gap-1 text-amber-500">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-5 h-5 fill-amber-400" />
+                <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
               ))}
             </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-heading">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight font-heading">
               Trusted by 1,480+ Dubai Residents & Landlords
             </h2>
-            <p className="text-sm text-slate-300">
-              Rated 4.95/5 on Google & Trustpilot for punctuality, technical competence, and pristine cleanups.
+            <p className="text-sm text-slate-600">
+              Rated 4.95/5 for punctuality, technical competence, and pristine cleanups.
             </p>
           </div>
 
@@ -1086,30 +1159,30 @@ export const Home2Client: React.FC<Home2Props> = ({
             ].map((rev, i) => (
               <div
                 key={i}
-                className="bg-slate-950 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between space-y-4 hover:border-slate-700 transition"
+                className="bg-white border border-slate-200 rounded-3xl p-6 flex flex-col justify-between space-y-4 shadow-sm hover:shadow-md transition"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-amber-400">
+                    <div className="flex items-center gap-1 text-amber-500">
                       {[...Array(rev.rating)].map((_, j) => (
-                        <Star key={j} className="w-4 h-4 fill-amber-400" />
+                        <Star key={j} className="w-4 h-4 fill-amber-400 text-amber-400" />
                       ))}
                     </div>
-                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
                       Verified Customer
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed italic">
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed italic">
                     "{rev.quote}"
                   </p>
                 </div>
 
-                <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-white">{rev.author}</div>
-                    <div className="text-[11px] text-slate-400">{rev.location}</div>
+                    <div className="text-xs font-extrabold text-slate-900">{rev.author}</div>
+                    <div className="text-[11px] text-slate-500">{rev.location}</div>
                   </div>
-                  <span className="text-[10px] font-semibold text-slate-400 bg-slate-800 px-2 py-1 rounded">
+                  <span className="text-[10px] font-bold text-brand-700 bg-brand-50 px-2 py-1 rounded border border-brand-200">
                     {rev.service}
                   </span>
                 </div>
@@ -1119,8 +1192,8 @@ export const Home2Client: React.FC<Home2Props> = ({
         </div>
       </section>
 
-      {/* 9. HIGH-CONVERTING BOTTOM ACTION STRIP */}
-      <section className="py-16 bg-gradient-to-r from-brand-900 via-slate-900 to-emerald-950 border-t border-slate-800 text-center relative overflow-hidden">
+      {/* 9. BOTTOM HIGH-CONVERTING ACTION STRIP */}
+      <section className="py-16 bg-gradient-to-r from-slate-900 via-brand-950 to-slate-950 text-white text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 relative z-10 space-y-5">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold backdrop-blur-md">
             <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
@@ -1131,7 +1204,7 @@ export const Home2Client: React.FC<Home2Props> = ({
             Need an Expert Technician at Your Property Right Now?
           </h2>
 
-          <p className="text-sm text-slate-200 max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
             Call our emergency dispatch desk or message on WhatsApp. A certified master technician will be at your location in under 25 minutes.
           </p>
 
@@ -1148,7 +1221,7 @@ export const Home2Client: React.FC<Home2Props> = ({
               onClick={handlePhone}
               className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-slate-950 font-extrabold text-sm shadow-xl flex items-center gap-2 transition transform active:scale-95"
             >
-              <Phone className="w-5 h-5 text-emerald-600" />
+              <Phone className="w-5 h-5 text-brand-600" />
               <span>Call Hotline: {BUSINESS_SETTINGS.phone}</span>
             </button>
           </div>
