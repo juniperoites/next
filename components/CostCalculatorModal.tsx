@@ -1,8 +1,28 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Sparkles, CheckCircle, Calculator } from "lucide-react";
-import { SERVICES, LOCATIONS } from "@/lib/data";
+import {
+  X,
+  Sparkles,
+  CheckCircle,
+  Calculator,
+  ArrowRight,
+  ArrowLeft,
+  Phone,
+  User,
+  MapPin,
+  Clock,
+  ShieldCheck,
+  Building,
+  Home,
+  Fan,
+  Droplets,
+  Zap,
+  Hammer,
+  Paintbrush,
+  Shield,
+  Check,
+} from "lucide-react";
 import { Analytics } from "@/lib/analytics";
 import confetti from "canvas-confetti";
 
@@ -12,75 +32,123 @@ interface CalculatorModalProps {
   initialServiceSlug?: string;
 }
 
+const PRIMARY_SERVICES = [
+  {
+    slug: "ac-repair",
+    name: "AC Repair & Cooling",
+    basePrice: 180,
+    icon: Fan,
+    color: "text-blue-600 bg-blue-50 border-blue-200",
+  },
+  {
+    slug: "emergency-plumbing-repair",
+    name: "Plumbing & Leaks",
+    basePrice: 199,
+    icon: Droplets,
+    color: "text-cyan-600 bg-cyan-50 border-cyan-200",
+  },
+  {
+    slug: "electrical-repair-troubleshooting",
+    name: "Electrical & Breaker",
+    basePrice: 175,
+    icon: Zap,
+    color: "text-amber-600 bg-amber-50 border-amber-200",
+  },
+  {
+    slug: "handyman-carpentry-assembly",
+    name: "Handyman & Carpentry",
+    basePrice: 150,
+    icon: Hammer,
+    color: "text-slate-700 bg-slate-100 border-slate-200",
+  },
+  {
+    slug: "interior-exterior-villa-painting",
+    name: "Villa Painting (Jotun)",
+    basePrice: 450,
+    icon: Paintbrush,
+    color: "text-emerald-600 bg-emerald-50 border-emerald-200",
+  },
+  {
+    slug: "amc-packages",
+    name: "365-Day AMC Contract",
+    basePrice: 349,
+    icon: Shield,
+    color: "text-purple-600 bg-purple-50 border-purple-200",
+  },
+];
+
+const DUBAI_AREAS = [
+  "Dubai Marina & JBR",
+  "Palm Jumeirah",
+  "Downtown Dubai & Business Bay",
+  "Jumeirah Village Circle (JVC)",
+  "Arabian Ranches & Damac Hills",
+  "Dubai Hills Estate & Meydan",
+  "Al Barsha & Tecom",
+  "Mirdif & Silicon Oasis",
+];
+
+const ABU_DHABI_AREAS = [
+  "Yas Island",
+  "Saadiyat Island",
+  "Al Reem Island",
+  "Corniche & Downtown",
+  "Khalifa City",
+  "Al Raha Beach",
+];
+
 export const CostCalculatorModal: React.FC<CalculatorModalProps> = ({
   isOpen,
   onClose,
   initialServiceSlug,
 }) => {
-  const [propertyType, setPropertyType] = useState<"Apartment" | "Villa / Townhouse" | "Commercial" | "Penthouse">("Villa / Townhouse");
-  const [acUnits, setAcUnits] = useState<number>(4);
-  const [selectedServices, setSelectedServices] = useState<string[]>(
-    initialServiceSlug ? [initialServiceSlug] : ["ac-repair"]
-  );
-  const [urgency, setUrgency] = useState<"EMERGENCY_NOW" | "WITHIN_24_HRS" | "SCHEDULED">("EMERGENCY_NOW");
-  const [selectedCity, setSelectedCity] = useState("Dubai");
-  const [selectedNeighborhood, setSelectedNeighborhood] = useState("Dubai Marina");
+  const [step, setStep] = useState<1 | 2>(1);
+  const [selectedService, setSelectedService] = useState<string>("ac-repair");
+  const [propertyType, setPropertyType] = useState<"Apartment" | "Villa" | "Commercial">("Villa");
+  const [urgency, setUrgency] = useState<"EMERGENCY" | "STANDARD">("EMERGENCY");
+  const [city, setCity] = useState<"Dubai" | "Abu Dhabi" | "Sharjah">("Dubai");
+  const [neighborhood, setNeighborhood] = useState("Dubai Marina & JBR");
 
-  // Contact form
+  // Contact Info
   const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("+971 5");
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedLeadId, setSubmittedLeadId] = useState("");
 
   useEffect(() => {
-    if (initialServiceSlug && !selectedServices.includes(initialServiceSlug)) {
-      setSelectedServices((prev) => [...prev, initialServiceSlug]);
+    if (initialServiceSlug) {
+      const match = PRIMARY_SERVICES.find((s) => s.slug === initialServiceSlug);
+      if (match) setSelectedService(match.slug);
+      else setSelectedService("ac-repair");
     }
   }, [initialServiceSlug]);
 
+  useEffect(() => {
+    if (city === "Dubai") setNeighborhood(DUBAI_AREAS[0]);
+    else if (city === "Abu Dhabi") setNeighborhood(ABU_DHABI_AREAS[0]);
+    else setNeighborhood("Al Majaz & Al Nahda");
+  }, [city]);
+
   if (!isOpen) return null;
 
-  // Real-time dynamic AED calculation
-  let basePrice = 0;
-  let propertyMultiplier = 1.0;
-  if (propertyType === "Villa / Townhouse") propertyMultiplier = 1.45;
-  if (propertyType === "Penthouse") propertyMultiplier = 1.35;
-  if (propertyType === "Commercial") propertyMultiplier = 1.8;
+  // Calculate Price
+  const currentServiceObj =
+    PRIMARY_SERVICES.find((s) => s.slug === selectedService) || PRIMARY_SERVICES[0];
 
-  const breakdown: { name: string; cost: number }[] = [];
+  let multiplier = 1.0;
+  if (propertyType === "Villa") multiplier = 1.35;
+  if (propertyType === "Commercial") multiplier = 1.6;
 
-  for (const slug of selectedServices) {
-    const srv = SERVICES.find((s) => s.slug === slug);
-    if (srv) {
-      let cost = srv.basePriceAED * propertyMultiplier;
-      if (slug === "ac-repair" || slug === "ac-duct-cleaning" || slug === "ac-maintenance") {
-        cost = srv.basePriceAED + Math.max(0, acUnits - 1) * (srv.basePriceAED * 0.4);
-      }
-      const roundedCost = Math.round(cost);
-      breakdown.push({ name: srv.name, cost: roundedCost });
-      basePrice += roundedCost;
-    }
+  let calculatedAED = Math.round(currentServiceObj.basePrice * multiplier);
+  if (urgency === "EMERGENCY") {
+    calculatedAED += 50; // Priority dispatch SLA
   }
-
-  if (urgency === "EMERGENCY_NOW") {
-    breakdown.push({ name: "24/7 Priority Emergency Dispatch SLA (<30 Mins)", cost: 99 });
-    basePrice += 99;
-  }
-
-  const estimatedTotalAED = Math.max(180, Math.round(basePrice));
-
-  const toggleService = (slug: string) => {
-    setSelectedServices((prev) =>
-      prev.includes(slug) ? (prev.length > 1 ? prev.filter((s) => s !== slug) : prev) : [...prev, slug]
-    );
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !phone || phone.length < 9) {
-      alert("Please enter a valid full name and UAE contact phone number (+971 5X XXX XXXX)");
+    if (!fullName || !phone || phone.length < 7) {
+      alert("Please enter your name and UAE phone number");
       return;
     }
 
@@ -93,14 +161,14 @@ export const CostCalculatorModal: React.FC<CalculatorModalProps> = ({
         body: JSON.stringify({
           fullName,
           phone,
-          email: email || `${fullName.toLowerCase().replace(/\s+/g, ".")}@client.ae`,
-          city: selectedCity,
-          neighborhood: selectedNeighborhood,
-          propertyType,
-          serviceSlug: selectedServices[0],
-          urgency,
-          estimatedAED: estimatedTotalAED,
-          message: `Interactive Quote calculated: AED ${estimatedTotalAED} for ${selectedServices.join(", ")} in ${selectedNeighborhood}`,
+          email: `${fullName.toLowerCase().replace(/\s+/g, ".")}@client.ae`,
+          city,
+          neighborhood,
+          propertyType: propertyType === "Villa" ? "Villa / Townhouse" : propertyType,
+          serviceSlug: selectedService,
+          urgency: urgency === "EMERGENCY" ? "EMERGENCY_NOW" : "SCHEDULED",
+          estimatedAED: calculatedAED,
+          message: `Booking Request: ${currentServiceObj.name} for ${propertyType} in ${neighborhood}, ${city}. Estimated AED ${calculatedAED}`,
         }),
       });
 
@@ -109,13 +177,12 @@ export const CostCalculatorModal: React.FC<CalculatorModalProps> = ({
         setSubmittedLeadId(data.lead?.id || `lead-${Date.now()}`);
         setIsSuccess(true);
         Analytics.trackQuoteSubmit({
-          service: selectedServices.join(", "),
-          location: `${selectedNeighborhood}, ${selectedCity}`,
-          estimatedAED: estimatedTotalAED,
-          urgency,
+          service: currentServiceObj.name,
+          location: `${neighborhood}, ${city}`,
+          estimatedAED: calculatedAED,
+          urgency: urgency === "EMERGENCY" ? "EMERGENCY_NOW" : "SCHEDULED",
         });
 
-        // Trigger confetti
         try {
           confetti({
             particleCount: 80,
@@ -123,277 +190,379 @@ export const CostCalculatorModal: React.FC<CalculatorModalProps> = ({
             origin: { y: 0.6 },
             colors: ["#2563eb", "#10b981", "#d97706", "#0f172a"],
           });
-        } catch (err) {
-          // ignore
-        }
+        } catch {}
       }
-    } catch (err) {
-      alert("Error submitting request. Please call our hotline +971 4 399 8877");
+    } catch {
+      alert("Failed to send booking. Please call our hotline +971 4 399 8877");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleResetAndClose = () => {
+    setIsSuccess(false);
+    setStep(1);
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-3xl rounded-3xl bg-white border border-surfaceBorder shadow-2xl overflow-hidden my-8 max-h-[90vh] flex flex-col">
-        {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-surfaceBorder bg-surface flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto animate-in fade-in duration-200">
+      <div className="relative w-full max-w-xl rounded-3xl bg-white border border-surfaceBorder shadow-2xl overflow-hidden my-6">
+        {/* Modal Top Bar */}
+        <div className="px-6 py-4 border-b border-surfaceBorder bg-slate-50 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-brand-600">
+            <div className="w-8 h-8 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-xs">
               <Calculator className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-base font-heading font-extrabold text-slate-900">
-                Instant AED Cost Calculator & Booking
+              <h3 className="font-heading font-extrabold text-slate-900 text-base">
+                Quick Price Estimate & Booking
               </h3>
-              <p className="text-xs text-slate-500">
-                Transparent UAE rates • Zero hidden callout fees
+              <p className="text-[11px] text-slate-500 font-medium">
+                DEWA-Certified Engineers • 90-Day Warranty
               </p>
             </div>
           </div>
+
           <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-white border border-surfaceBorder text-slate-400 hover:text-slate-700 flex items-center justify-center transition shadow-sm"
+            onClick={handleResetAndClose}
+            className="w-8 h-8 rounded-xl bg-white border border-surfaceBorder text-slate-400 hover:text-slate-800 flex items-center justify-center transition shadow-xs"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
+        {/* Step Progress Bar */}
+        {!isSuccess && (
+          <div className="px-6 pt-4 pb-2 bg-white flex items-center justify-between border-b border-surfaceBorder/60">
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center ${
+                  step === 1 ? "bg-brand-600 text-white" : "bg-emerald-100 text-emerald-800"
+                }`}
+              >
+                {step === 1 ? "1" : "✓"}
+              </span>
+              <span className={`text-xs font-bold ${step === 1 ? "text-slate-900" : "text-slate-500"}`}>
+                Service & Property
+              </span>
+            </div>
+
+            <div className="h-0.5 w-12 bg-slate-200" />
+
+            <div className="flex items-center gap-2">
+              <span
+                className={`w-6 h-6 rounded-full text-xs font-bold flex items-center justify-center ${
+                  step === 2 ? "bg-brand-600 text-white" : "bg-slate-100 text-slate-400"
+                }`}
+              >
+                2
+              </span>
+              <span className={`text-xs font-bold ${step === 2 ? "text-slate-900" : "text-slate-400"}`}>
+                Location & Booking
+              </span>
+            </div>
+          </div>
+        )}
+
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto space-y-6 flex-1 bg-white">
+        <div className="p-6 bg-white">
           {isSuccess ? (
-            <div className="text-center py-10 space-y-4 animate-in zoom-in-95">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 border border-emerald-300 text-emerald-600 flex items-center justify-center mx-auto">
+            /* Success Screen */
+            <div className="text-center py-6 space-y-4 animate-in zoom-in-95">
+              <div className="w-16 h-16 rounded-2xl bg-emerald-100 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
                 <CheckCircle className="w-8 h-8" />
               </div>
-              <h4 className="text-2xl font-heading font-extrabold text-slate-900">
-                Booking Request Confirmed!
-              </h4>
-              <p className="text-sm text-slate-600 max-w-md mx-auto">
-                Thank you, <strong className="text-slate-900">{fullName}</strong>. Your inquiry (<span className="text-brand-700 font-mono text-xs">{submittedLeadId}</span>) has been routed to our Operations Control Room.
-              </p>
-              <div className="p-4 rounded-2xl bg-surface border border-surfaceBorder max-w-md mx-auto text-xs text-left space-y-2">
+              <div className="space-y-1">
+                <h4 className="font-heading font-extrabold text-2xl text-slate-900">
+                  Technician Request Dispatched!
+                </h4>
+                <p className="text-xs text-slate-600 max-w-sm mx-auto">
+                  Thank you, <strong className="text-slate-900">{fullName}</strong>. Our control room has assigned a master technician to your property.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-surface border border-surfaceBorder text-xs text-left space-y-2 max-w-sm mx-auto">
                 <div className="flex justify-between">
-                  <span className="text-slate-500 font-semibold">Assigned Hub:</span>
-                  <span className="font-bold text-slate-900">{selectedNeighborhood}, {selectedCity}</span>
+                  <span className="text-slate-500 font-semibold">Service:</span>
+                  <span className="font-bold text-slate-900">{currentServiceObj.name}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500 font-semibold">Estimated Total:</span>
-                  <span className="font-extrabold text-emerald-700 font-heading text-sm">AED {estimatedTotalAED}</span>
+                  <span className="text-slate-500 font-semibold">Location:</span>
+                  <span className="font-bold text-slate-900">{neighborhood}, {city}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500 font-semibold">Arrival SLA:</span>
+                  <span className="text-slate-500 font-semibold">Estimated Price:</span>
+                  <span className="font-extrabold text-emerald-700 text-sm font-heading">
+                    AED {calculatedAED}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500 font-semibold">Response SLA:</span>
                   <span className="font-bold text-emerald-700">
-                    {urgency === "EMERGENCY_NOW" ? "< 30 Minutes Guaranteed" : "Within 24 Hours"}
+                    {urgency === "EMERGENCY" ? "< 25 Mins Rapid Arrival" : "Within 24 Hours"}
                   </span>
                 </div>
               </div>
-              <div className="pt-4 flex justify-center gap-3">
+
+              <div className="pt-2">
                 <button
-                  onClick={() => {
-                    setIsSuccess(false);
-                    onClose();
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md"
+                  onClick={handleResetAndClose}
+                  className="px-7 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow-md transition"
                 >
                   Done
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Step 1: Property Type */}
-              <div>
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-                  1. Property Type
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {(["Apartment", "Villa / Townhouse", "Commercial", "Penthouse"] as const).map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setPropertyType(type)}
-                      className={`p-3 rounded-xl text-xs font-bold transition flex items-center justify-center text-center ${
-                        propertyType === type
-                          ? "bg-brand-600 text-white shadow-sm"
-                          : "bg-surface text-slate-700 border border-surfaceBorder hover:bg-surfaceHover"
-                      }`}
-                    >
-                      {type}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <div>
+              {/* STEP 1: Select Service & Property Type */}
+              {step === 1 && (
+                <div className="space-y-5 animate-in fade-in-50">
+                  {/* Service Selection */}
+                  <div>
+                    <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-2.5">
+                      1. Select Service
+                    </label>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      {PRIMARY_SERVICES.map((s) => {
+                        const Icon = s.icon;
+                        const isSelected = selectedService === s.slug;
+                        return (
+                          <button
+                            key={s.slug}
+                            type="button"
+                            onClick={() => setSelectedService(s.slug)}
+                            className={`p-3 rounded-2xl border text-left transition flex items-center gap-3 ${
+                              isSelected
+                                ? "border-brand-600 bg-brand-50/70 shadow-xs ring-1 ring-brand-600"
+                                : "border-surfaceBorder bg-surface hover:bg-surfaceHover text-slate-700"
+                            }`}
+                          >
+                            <div
+                              className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${s.color}`}
+                            >
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-bold text-slate-900 truncate">
+                                {s.name}
+                              </div>
+                              <div className="text-[11px] font-extrabold text-slate-600 mt-0.5">
+                                From AED {s.basePrice}
+                              </div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-              {/* Step 2: Select Services */}
-              <div>
-                <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-2">
-                  2. Select Required Services (Multi-Select)
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-48 overflow-y-auto p-1">
-                  {SERVICES.map((srv) => {
-                    const isSelected = selectedServices.includes(srv.slug);
-                    return (
+                  {/* Property Type Selection */}
+                  <div>
+                    <label className="text-xs font-extrabold text-slate-800 uppercase tracking-wider block mb-2">
+                      2. Property Type
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {(["Apartment", "Villa", "Commercial"] as const).map((type) => (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => setPropertyType(type)}
+                          className={`py-2.5 px-3 rounded-xl text-xs font-bold transition text-center border ${
+                            propertyType === type
+                              ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                              : "bg-surface border-surfaceBorder text-slate-700 hover:bg-surfaceHover"
+                          }`}
+                        >
+                          {type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Live Estimated Price Strip & Next Button */}
+                  <div className="pt-2 border-t border-surfaceBorder flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-slate-400">
+                        Estimated Starting Price
+                      </div>
+                      <div className="font-heading font-extrabold text-xl text-brand-700">
+                        AED {calculatedAED}
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setStep(2)}
+                      className="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition flex items-center gap-1.5"
+                    >
+                      <span>Continue to Booking</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 2: Location, Urgency & Contact Form */}
+              {step === 2 && (
+                <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in-50">
+                  {/* City & Area */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Emirate / City
+                      </label>
+                      <select
+                        value={city}
+                        onChange={(e) => setCity(e.target.value as any)}
+                        className="w-full bg-surface border border-surfaceBorder text-slate-900 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500"
+                      >
+                        <option value="Dubai">Dubai</option>
+                        <option value="Abu Dhabi">Abu Dhabi</option>
+                        <option value="Sharjah">Sharjah</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Neighborhood / Area
+                      </label>
+                      <select
+                        value={neighborhood}
+                        onChange={(e) => setNeighborhood(e.target.value)}
+                        className="w-full bg-surface border border-surfaceBorder text-slate-900 rounded-xl p-2.5 text-xs font-semibold focus:outline-none focus:border-brand-500"
+                      >
+                        {city === "Dubai" &&
+                          DUBAI_AREAS.map((a) => (
+                            <option key={a} value={a}>
+                              {a}
+                            </option>
+                          ))}
+                        {city === "Abu Dhabi" &&
+                          ABU_DHABI_AREAS.map((a) => (
+                            <option key={a} value={a}>
+                              {a}
+                            </option>
+                          ))}
+                        {city === "Sharjah" && (
+                          <>
+                            <option value="Al Majaz">Al Majaz</option>
+                            <option value="Al Nahda">Al Nahda</option>
+                            <option value="Al Taawun">Al Taawun</option>
+                          </>
+                        )}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Urgency SLA */}
+                  <div>
+                    <label className="text-xs font-bold text-slate-700 block mb-1.5">
+                      Arrival Priority
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
                       <button
-                        key={srv.id}
                         type="button"
-                        onClick={() => toggleService(srv.slug)}
-                        className={`p-2.5 rounded-xl text-left text-xs transition border flex items-center justify-between ${
-                          isSelected
-                            ? "bg-blue-50 border-brand-500 text-brand-900 font-bold"
+                        onClick={() => setUrgency("EMERGENCY")}
+                        className={`p-2.5 rounded-xl border text-left text-xs transition ${
+                          urgency === "EMERGENCY"
+                            ? "bg-red-50 border-red-300 text-red-900 font-bold"
                             : "bg-surface border-surfaceBorder text-slate-700 hover:bg-surfaceHover"
                         }`}
                       >
-                        <span className="truncate pr-2">{srv.name}</span>
-                        <span className="text-[11px] font-bold text-slate-900 shrink-0">
-                          +AED {srv.basePriceAED}
-                        </span>
+                        <div className="flex items-center gap-1.5 font-bold text-red-700">
+                          <span>🚨 Emergency Priority</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">&lt; 25 Min Arrival SLA</div>
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
 
-              {/* Step 3: AC Units & Priority */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    AC Units Count: {acUnits}
-                  </label>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={acUnits}
-                    onChange={(e) => setAcUnits(parseInt(e.target.value))}
-                    className="w-full accent-brand-600 cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-slate-400 mt-1">
-                    <span>1 Unit</span>
-                    <span>5 Units</span>
-                    <span>10+ Units</span>
+                      <button
+                        type="button"
+                        onClick={() => setUrgency("STANDARD")}
+                        className={`p-2.5 rounded-xl border text-left text-xs transition ${
+                          urgency === "STANDARD"
+                            ? "bg-blue-50 border-brand-300 text-brand-900 font-bold"
+                            : "bg-surface border-surfaceBorder text-slate-700 hover:bg-surfaceHover"
+                        }`}
+                      >
+                        <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                          <span>⚡ Standard Booking</span>
+                        </div>
+                        <div className="text-[10px] text-slate-500 mt-0.5">Flexible Appointment</div>
+                      </button>
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Priority Dispatch SLA
-                  </label>
-                  <select
-                    value={urgency}
-                    onChange={(e) => setUrgency(e.target.value as any)}
-                    className="w-full bg-surface text-slate-900 border border-surfaceBorder rounded-xl p-2.5 text-xs font-bold focus:outline-none focus:border-brand-500"
-                  >
-                    <option value="EMERGENCY_NOW">🚨 Emergency Now (Arrival &lt;30 Mins)</option>
-                    <option value="WITHIN_24_HRS">⚡ Standard (Within 24 Hours)</option>
-                    <option value="SCHEDULED">📅 Scheduled Next Few Days</option>
-                  </select>
-                </div>
-              </div>
+                  {/* Customer Contact */}
+                  <div className="space-y-3 pt-1">
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        Your Full Name *
+                      </label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          placeholder="e.g. Mohammed Al-Falasi"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          required
+                          className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-surface border border-surfaceBorder text-xs text-slate-900 font-medium focus:outline-none focus:border-brand-500"
+                        />
+                      </div>
+                    </div>
 
-              {/* Step 4: Location */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    City
-                  </label>
-                  <select
-                    value={selectedCity}
-                    onChange={(e) => setSelectedCity(e.target.value)}
-                    className="w-full bg-surface text-slate-900 border border-surfaceBorder rounded-xl p-2.5 text-xs font-bold focus:outline-none focus:border-brand-500"
-                  >
-                    <option value="Dubai">Dubai</option>
-                    <option value="Abu Dhabi">Abu Dhabi</option>
-                    <option value="Sharjah">Sharjah</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1">
-                    Neighborhood
-                  </label>
-                  <select
-                    value={selectedNeighborhood}
-                    onChange={(e) => setSelectedNeighborhood(e.target.value)}
-                    className="w-full bg-surface text-slate-900 border border-surfaceBorder rounded-xl p-2.5 text-xs font-bold focus:outline-none focus:border-brand-500"
-                  >
-                    {LOCATIONS.filter((l) => l.city.toLowerCase() === selectedCity.toLowerCase()).map((l) => (
-                      <option key={l.id} value={l.neighborhood}>
-                        {l.neighborhood}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Price Breakdown Box */}
-              <div className="p-4 rounded-2xl bg-surface border border-surfaceBorder space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700 uppercase border-b border-surfaceBorder pb-2">
-                  <span>Transparent Rate Breakdown</span>
-                  <span className="text-emerald-700 font-semibold">VAT Included</span>
-                </div>
-                {breakdown.map((item, idx) => (
-                  <div key={idx} className="flex justify-between text-xs text-slate-600">
-                    <span>{item.name}</span>
-                    <span className="font-bold text-slate-900 font-mono">AED {item.cost}</span>
+                    <div>
+                      <label className="text-xs font-bold text-slate-700 block mb-1">
+                        UAE Contact Number *
+                      </label>
+                      <div className="relative">
+                        <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="tel"
+                          placeholder="+971 50 123 4567"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          required
+                          className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-surface border border-surfaceBorder text-xs text-slate-900 font-medium font-mono focus:outline-none focus:border-brand-500"
+                        />
+                      </div>
+                    </div>
                   </div>
-                ))}
-                <div className="pt-2 border-t border-surfaceBorder flex justify-between items-baseline">
-                  <span className="text-sm font-bold text-slate-900">Estimated Total:</span>
-                  <div className="text-right">
-                    <span className="text-2xl font-heading font-extrabold text-brand-700">
-                      AED {estimatedTotalAED}
-                    </span>
-                    <div className="text-[10px] text-slate-500">Includes 90-day parts warranty</div>
-                  </div>
-                </div>
-              </div>
 
-              {/* Contact Info */}
-              <div className="space-y-3 pt-1">
-                <div className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  Customer Contact & Booking
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <input
-                      type="text"
-                      placeholder="Your Full Name *"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                      className="w-full bg-surface text-slate-900 border border-surfaceBorder rounded-xl p-3 text-xs focus:border-brand-500 focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <input
-                      type="tel"
-                      placeholder="UAE Phone (+971 5X XXX XXXX) *"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required
-                      className="w-full bg-surface text-slate-900 border border-surfaceBorder rounded-xl p-3 text-xs focus:border-brand-500 focus:outline-none"
-                    />
-                  </div>
-                </div>
-              </div>
+                  {/* Summary & Submit */}
+                  <div className="p-3.5 rounded-2xl bg-surface border border-surfaceBorder flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] uppercase font-bold text-slate-500">
+                        {currentServiceObj.name} ({propertyType})
+                      </div>
+                      <div className="font-heading font-extrabold text-lg text-brand-700">
+                        AED {calculatedAED} <span className="text-[10px] text-slate-400 font-normal">incl. VAT</span>
+                      </div>
+                    </div>
 
-              {/* Submit CTA */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-4 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-sm tracking-wide shadow-card transition disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? (
-                  <span>Dispatching to Operations...</span>
-                ) : (
-                  <>
-                    <Sparkles className="w-4 h-4" />
-                    <span>Confirm Booking & Dispatch Technician (AED {estimatedTotalAED})</span>
-                  </>
-                )}
-              </button>
-            </form>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setStep(1)}
+                        className="px-3 py-2 rounded-xl bg-white border border-surfaceBorder text-slate-600 font-bold text-xs hover:bg-surfaceHover transition"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                      </button>
+
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md transition disabled:opacity-50"
+                      >
+                        {isSubmitting ? "Dispatching..." : "Confirm & Dispatch"}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
           )}
         </div>
       </div>

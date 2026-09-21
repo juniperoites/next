@@ -201,7 +201,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuoteModal }) => {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-6">
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
           <Link
             href="/"
             className="text-xs xl:text-sm font-bold text-slate-700 hover:text-brand-600 transition whitespace-nowrap"
@@ -211,13 +211,13 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuoteModal }) => {
 
           {/* Mega Menu Trigger */}
           <div
-            className="relative"
+            className="relative py-2"
             onMouseEnter={() => setServicesDropdown(true)}
             onMouseLeave={() => setServicesDropdown(false)}
           >
             <button
               onClick={() => setServicesDropdown(!servicesDropdown)}
-              className={`flex items-center gap-1 text-xs xl:text-sm font-bold transition py-2 whitespace-nowrap ${
+              className={`flex items-center gap-1 text-xs xl:text-sm font-bold transition whitespace-nowrap ${
                 servicesDropdown ? "text-brand-600" : "text-slate-700 hover:text-brand-600"
               }`}
             >
@@ -404,22 +404,14 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenQuoteModal }) => {
           </Link>
         </nav>
 
-        {/* Action Buttons */}
-        <div className="hidden lg:flex items-center gap-2.5 shrink-0">
+        {/* Right Action Button */}
+        <div className="hidden lg:flex items-center shrink-0">
           <button
             onClick={handleWhatsAppClick}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 font-bold text-xs transition shadow-sm whitespace-nowrap"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm hover:shadow-md transition-all transform active:scale-95 whitespace-nowrap"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+            <MessageSquare className="w-4 h-4" />
             <span>WhatsApp Direct</span>
-          </button>
-
-          <button
-            onClick={() => (onOpenQuoteModal ? onOpenQuoteModal() : window.location.assign("/quote"))}
-            className="px-3.5 xl:px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs tracking-wide shadow-md hover:shadow-lg transition transform active:scale-95 flex items-center gap-1.5 whitespace-nowrap"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Instant AED Quote</span>
           </button>
         </div>
 

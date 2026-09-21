@@ -611,8 +611,35 @@ export async function saveAMCPackage(pkg: AMCPackageData): Promise<AMCPackageDat
 export async function getPortfolioItems(): Promise<PortfolioItemData[]> {
   await checkInitSeed();
   try {
+    const existing = await prisma.portfolioItem.findMany();
+    // If DB contains old unsplash links or needs sync, refresh with local matched assets
+    const needsRefresh =
+      existing.length === 0 ||
+      existing.some((item) => item.beforeImage.startsWith("http") || !item.beforeImage.startsWith("/images/"));
+
+    if (needsRefresh) {
+      await prisma.portfolioItem.deleteMany({});
+      for (const p of PORTFOLIO_ITEMS) {
+        await prisma.portfolioItem.create({
+          data: {
+            id: p.id,
+            title: p.title,
+            slug: p.slug,
+            categorySlug: p.categorySlug,
+            locationName: p.locationName,
+            beforeImage: p.beforeImage,
+            afterImage: p.afterImage,
+            completionTime: p.completionTime,
+            clientType: p.clientType,
+            description: p.description,
+            resultsAchieved: JSON.stringify(p.resultsAchieved),
+          },
+        });
+      }
+    }
+
     const items = await prisma.portfolioItem.findMany({
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
     });
     if (items.length > 0) {
       return items.map(mapDbPortfolio);

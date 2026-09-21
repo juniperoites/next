@@ -121,11 +121,10 @@ export async function ensureDatabaseSeeded() {
     }
 
     // 5. Portfolio Items
+    await prisma.portfolioItem.deleteMany({});
     for (const item of PORTFOLIO_ITEMS) {
-      await prisma.portfolioItem.upsert({
-        where: { slug: item.slug },
-        update: {},
-        create: {
+      await prisma.portfolioItem.create({
+        data: {
           id: item.id,
           title: item.title,
           slug: item.slug,
