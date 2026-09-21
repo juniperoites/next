@@ -42,7 +42,7 @@ export async function ensureDatabaseSeeded() {
 
     // 2. Services
     for (const srv of SERVICES) {
-      await prisma.service.upsert({
+      await (prisma.service as any).upsert({
         where: { slug: srv.slug },
         update: {},
         create: {
@@ -62,7 +62,7 @@ export async function ensureDatabaseSeeded() {
           metaTitle: srv.metaTitle,
           metaDesc: srv.metaDesc,
           image: srv.image || null,
-        } as any,
+        },
       });
     }
 
